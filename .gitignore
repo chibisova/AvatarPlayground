@@ -1,0 +1,70 @@
+# ==========================
+# Build directories
+# ==========================
+build/
+cmake-build-*/
+
+# ==========================
+# CMake generated files
+# ==========================
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+
+# ==========================
+# macOS
+# ==========================
+.DS_Store
+
+# ==========================
+# Visual Studio Code
+# ==========================
+.vscode/settings.json
+.vscode/ipch/
+.vscode/.browse.VC.db*
+.vscode/*.log
+
+# Keep useful VS Code config if we add it later
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# ==========================
+# Executables
+# ==========================
+*.exe
+*.out
+*.app
+
+# ==========================
+# Object files
+# ==========================
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# ==========================
+# Debug symbols
+# ==========================
+*.dSYM/
+
+# ==========================
+# Temporary files
+# ==========================
+*.tmp
+*.swp
+*~
+
+# ==========================
+# Generated screenshots/videos
+# ==========================
+screenshots/
+recordings/
