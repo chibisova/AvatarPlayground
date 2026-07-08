@@ -12,6 +12,7 @@ add_executable(SpatialAvatarPlayground
     src/HUD.cpp
     src/Input.cpp
     src/Timing.cpp
+    src/ImageProcessor.cpp
 )
 
 target_include_directories(SpatialAvatarPlayground PRIVATE include)

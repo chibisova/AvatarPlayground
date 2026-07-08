@@ -67,3 +67,21 @@ cv::Mat& processed = frame;
 ```
 
 One object with two names (alias).
+
+
+## Color Space Conversion
+
+```cpp
+cv::cvtColor(frame, grayFrame, cv::COLOR_BGR2GRAY);
+```
+
+## Single vs Multi-channel Images
+
+BGR images contain three channels.
+
+Grayscale images contain one channel.
+
+Because grayscale images no longer store color information, drawing colored overlays (HUD, landmarks, boxes) requires either:
+
+- converting back to BGR, or
+- visualizing on a separate color image.

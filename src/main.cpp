@@ -9,9 +9,10 @@
 
 int main() {
 
-    // Constants
+    // Defaults
     int numOfScr = 1; // Counter for screenshots
-
+    ProcessingMode currentMode = ProcessingMode::Original; // Default processing mode
+    
     // Open the default camera (camera index 0)
     cv::VideoCapture cam(0);
 
@@ -39,14 +40,17 @@ int main() {
             break;
         }
 
+        // Apply image processing based on the current mode
+        cv::Mat processedFrame = processFrame(frame, currentMode);
+
         // Display text on the frame
-        drawHUD(frame, fps);
+        drawHUD(processedFrame, fps, currentMode);
 
         // Display the frame
-        cv::imshow("video", frame);
+        cv::imshow("video", processedFrame);
 
         // Handle keyboard input
-        if (!handleKeyboard(cv::waitKey(1), frame, Config::SCREENSHOT_DIR, numOfScr))
+        if (!handleKeyboard(cv::waitKey(1), frame, Config::SCREENSHOT_DIR, numOfScr, currentMode))
         {
             break;
         }
