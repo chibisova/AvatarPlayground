@@ -9,7 +9,12 @@ find_package(OpenCV REQUIRED)
 
 add_executable(SpatialAvatarPlayground
     src/main.cpp
+    src/HUD.cpp
+    src/Input.cpp
+    src/Timing.cpp
 )
+
+target_include_directories(SpatialAvatarPlayground PRIVATE include)
 
 target_include_directories(SpatialAvatarPlayground PRIVATE ${OpenCV_INCLUDE_DIRS})
 
