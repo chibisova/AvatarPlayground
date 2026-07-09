@@ -35,6 +35,8 @@ int main() {
         // Capture a frame
         cam >> frame;
 
+        cv::flip(frame, frame, 1);
+
         if (frame.empty()) {
             std::cerr << "Error: Empty frame captured." << std::endl;
             break;

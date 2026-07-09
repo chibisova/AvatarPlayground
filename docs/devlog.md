@@ -16,3 +16,12 @@
 - Learned the difference between shallow and deep copies of `cv::Mat`.
 - Reorganized project into scalable modules before adding computer vision algorithms.
 - Implemented Grayscale mode.
+
+## 2026-07-09
+
+## Classical Image Processing completed
+
+- Added Gaussian blur, Canny edge detection
+- Added adaptive thresholding
+- Added Shi-Tomasi and Harris corner detection
+- Refactored processing pipeline

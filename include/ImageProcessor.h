@@ -11,7 +11,8 @@ enum class ProcessingMode
     Blur,
     Canny,
     Threshold,
-    Corners
+    ShiTomasiCorners,
+    HarrisCorners
 };
 
 // Function to process the frame based on the selected mode

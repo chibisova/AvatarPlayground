@@ -82,4 +82,279 @@ HandTracker
 Stylization
     Color → Stylized Color
 
+# Computer Vision
 
+## Processing Pipelines
+
+Many computer vision algorithms are composed of multiple processing steps rather than a single operation.
+
+Example:
+
+```
+Camera (BGR)
+    ↓
+Grayscale
+    ↓
+Gaussian Blur
+    ↓
+Canny Edge Detection
+```
+
+Each stage prepares the image for the next one by reducing noise or extracting information required by the following algorithm.
+
+---
+
+# Canny Edge Detection
+
+## Idea
+
+Edges are locations where image intensity changes rapidly.
+
+Instead of looking at colors, Canny analyzes image gradients after converting the image to grayscale.
+
+Pipeline:
+
+```
+Color
+    ↓
+Grayscale
+    ↓
+Gaussian Blur
+    ↓
+Gradient Calculation (Sobel)
+    ↓
+Non-Maximum Suppression
+    ↓
+Hysteresis Thresholding
+```
+
+---
+
+## Hysteresis Thresholding
+
+### Why do we need two thresholds?
+
+If we use only one threshold:
+
+```
+5   18   42   85 | 160 220 250
+                 ↑
+              threshold
+```
+
+only values above the threshold are kept.
+
+However, real edges are rarely equally strong across an entire object.
+
+Instead, Canny uses two thresholds:
+
+```
+Low  = 100
+High = 200
+```
+
+Pixels above the high threshold become **strong edges**.
+
+Pixels between the two thresholds become **weak edges**.
+
+Canny then asks:
+
+> "Is this weak edge connected to a strong edge?"
+
+If yes:
+
+```
+Strong ─ Weak ─ Weak
+```
+
+Keep it.
+
+If not:
+
+```
+Weak
+
+(no strong neighbor)
+```
+
+Discard it because it is most likely noise.
+
+---
+
+## Non-Maximum Suppression
+
+Gradient magnitude is often spread across several neighboring pixels.
+
+Non-Maximum Suppression keeps only the strongest pixel along the gradient direction, producing thin one-pixel-wide edges.
+
+Without NMS:
+
+```
+████
+████
+████
+```
+
+With NMS:
+
+```
+ █
+ █
+ █
+```
+
+---
+
+## Why is it called hysteresis?
+
+The word comes from physics.
+
+It describes a system whose current decision depends on previous or neighboring states.
+
+In Canny, a weak edge is accepted only if it is connected to an already accepted strong edge.
+
+---
+
+# Adaptive Threshold
+
+## Problem
+
+The world is not purely black and white.
+
+Images contain many different illumination levels, making one global threshold unreliable.
+
+---
+
+## Solution
+
+Instead of asking
+
+> "Is this pixel brighter than 128?"
+
+Adaptive Threshold asks
+
+> "Is this pixel brighter than its local neighborhood?"
+
+Each small image region computes its own threshold.
+
+---
+
+## Result
+
+Original:
+
+```
+████████
+██▒▒▒███
+██▒▒▒███
+████████
+```
+
+Adaptive Threshold:
+
+```
+████████
+██    ██
+██    ██
+████████
+```
+
+---
+
+## Applications
+
+- Document scanning
+- OCR
+- QR code detection
+- Sudoku solvers
+- Industrial inspection
+- Contour extraction
+- Robotics
+
+---
+
+## Relationship to other filters
+
+Gaussian Blur
+→ averages neighboring pixels.
+
+Canny
+→ detects strong intensity changes between neighboring pixels.
+
+Adaptive Threshold
+→ compares a pixel against its local neighborhood.
+
+---
+
+# Corner Detection
+
+## Problem
+
+To track an object across multiple frames, we need image features that are easy to recognize again after the camera or object moves.
+
+Flat regions and edges are ambiguous.
+
+Corners are much more distinctive.
+
+---
+
+## Shi-Tomasi
+
+Pipeline:
+
+```
+Color
+    ↓
+Grayscale
+    ↓
+Gaussian Blur
+    ↓
+Shi-Tomasi
+    ↓
+Vector<Point2f>
+```
+
+Shi-Tomasi directly returns the strongest corners.
+
+Because OpenCV already performs feature ranking and Non-Maximum Suppression, the detected corners are usually clean and stable.
+
+---
+
+## Harris Corner Detector
+
+Pipeline:
+
+```
+Color
+    ↓
+Grayscale
+    ↓
+Gaussian Blur
+    ↓
+Harris Response
+    ↓
+Normalize
+    ↓
+Threshold
+    ↓
+Draw Corners
+```
+
+Unlike Shi-Tomasi, Harris does **not** return corner locations.
+
+Instead, it produces a floating-point response map indicating how "corner-like" every pixel is.
+
+The developer must normalize the response, choose a threshold, and visualize the detected corners.
+
+---
+
+## Harris vs Shi-Tomasi
+
+| Harris | Shi-Tomasi |
+|---------|------------|
+| Returns a corner response image | Returns corner positions directly |
+| Requires manual thresholding | Automatically selects the strongest corners |
+| More parameters to tune | Simpler API |
+| Good for understanding corner response | Commonly used in practice |
+
+Shi-Tomasi was proposed as an improvement over Harris by eliminating the need for Harris's heuristic response function and returning the strongest features directly.
