@@ -87,3 +87,13 @@ Implementation-only dependencies belong in the `.cpp` file.
 
 Goal:
 Every header should be self-contained and compile independently.
+
+## Build Systems (CMake)
+
+Creating a new `.cpp` file is not enough.
+
+The build system must also know that the file exists.
+
+For CMake projects, every new implementation file should be added to `add_executable(...)` (or `target_sources(...)`).
+
+Otherwise the compiler will ignore the file, which may lead to confusing IntelliSense or linker errors.

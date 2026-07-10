@@ -25,3 +25,9 @@
 - Added adaptive thresholding
 - Added Shi-Tomasi and Harris corner detection
 - Refactored processing pipeline
+
+## 2026-07-10
+
+## Motion Analysis
+
+- Learned Polymorphism and Interface. Refactored architecture of frameProcessor acordingly. 
