@@ -36,6 +36,9 @@ bool handleKeyboard(int key, const cv::Mat& frame, const std::string& screenshot
         case '7':
             currentMode = ProcessingMode::HarrisCorners;
             break;
+        case '8':
+            currentMode = ProcessingMode::OpticalFlow;
+            break;
     }
     return true; // Continue running
 }

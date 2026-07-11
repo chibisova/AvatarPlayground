@@ -15,12 +15,15 @@ add_executable(SpatialAvatarPlayground
     src/Input.cpp
     src/Timing.cpp
     src/ImageProcessor.cpp
+    src/processors/OriginalProcessor.cpp
     src/processors/GrayProcessor.cpp
     src/processors/BlurProcessor.cpp
     src/processors/CannyProcessor.cpp
     src/processors/ThresholdProcessor.cpp
     src/processors/ShiTomasiProcessor.cpp
     src/processors/HarrisProcessor.cpp
+    src/processors/OpticalFlowProcessor.cpp
+    src/ProcessorManager.cpp
 )
 
 target_include_directories(SpatialAvatarPlayground PRIVATE 

@@ -5,6 +5,8 @@
 #include "HUD.h"
 #include "Input.h"
 #include "Timing.h"
+#include "ProcessorManager.h"
+
 
 
 int main() {
@@ -12,7 +14,8 @@ int main() {
     // Defaults
     int numOfScr = 1; // Counter for screenshots
     ProcessingMode currentMode = ProcessingMode::Original; // Default processing mode
-    
+    vision::ProcessorManager processorManager;
+
     // Open the default camera (camera index 0)
     cv::VideoCapture cam(0);
 
@@ -43,7 +46,9 @@ int main() {
         }
 
         // Apply image processing based on the current mode
-        cv::Mat processedFrame = processFrame(frame, currentMode);
+        cv::Mat processedFrame = processorManager
+                                    .getProcessor(currentMode)
+                                    ->process(frame);
 
         // Display text on the frame
         drawHUD(processedFrame, fps, currentMode);

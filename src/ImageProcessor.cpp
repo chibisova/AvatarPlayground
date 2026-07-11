@@ -6,6 +6,7 @@
 #include "processors/CannyProcessor.h"
 #include "processors/ThresholdProcessor.h"
 #include "processors/ShiTomasiProcessor.h"
+#include "processors/OpticalFlowProcessor.h"
 
 
 cv::Mat processFrame(const cv::Mat& frame, ProcessingMode mode)
@@ -52,6 +53,12 @@ cv::Mat processFrame(const cv::Mat& frame, ProcessingMode mode)
             return harrisProcessor.process(frame);
         }
 
+        case ProcessingMode::OpticalFlow:
+        {
+            vision::OpticalFlowProcessor opticalFlowProcessor;
+            return opticalFlowProcessor.process(frame);
+        }
+
         default:
             return frame.clone();
     }
@@ -82,6 +89,9 @@ std::string processingModeToString(ProcessingMode mode)
         
         case ProcessingMode::HarrisCorners:
             return "Harris Corners";
+        
+        case ProcessingMode::OpticalFlow:
+            return "Optical Flow";
     }
 
     return "Unknown";

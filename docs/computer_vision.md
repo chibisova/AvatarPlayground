@@ -358,3 +358,67 @@ The developer must normalize the response, choose a threshold, and visualize the
 | Good for understanding corner response | Commonly used in practice |
 
 Shi-Tomasi was proposed as an improvement over Harris by eliminating the need for Harris's heuristic response function and returning the strongest features directly.
+
+## Optical Flow (Lucas-Kanade)
+
+### Goal
+
+Track how image features move between consecutive frames.
+
+Pipeline:
+
+Camera
+    ↓
+Grayscale
+    ↓
+Gaussian Blur
+    ↓
+Shi-Tomasi Corner Detection (first frame)
+    ↓
+Lucas-Kanade Optical Flow
+    ↓
+Draw motion vectors
+
+### Idea
+
+Instead of detecting new corners every frame, estimate where previously detected corners moved.
+
+For each tracked point:
+
+Previous Frame
+      ●
+       \
+        \
+         ●
+Current Frame
+
+The line represents the estimated motion vector.
+
+### Why do we need previous frame?
+
+Optical Flow compares two consecutive frames.
+
+Without storing the previous frame and previous feature points, motion cannot be estimated.
+
+### Lost tracking
+
+Some points disappear because of:
+
+- Occlusion
+- Leaving the camera view
+- Motion blur
+- Lighting changes
+
+When too few points remain, detect new Shi-Tomasi corners.
+
+### Limitations
+
+Optical Flow tracks image patches, not objects.
+
+It does not know whether a point belongs to a face, hand, or background.
+
+Therefore tracking may drift when:
+
+- Objects overlap
+- Lighting changes
+- The appearance of a patch changes significantly

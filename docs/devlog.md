@@ -31,3 +31,11 @@
 ## Motion Analysis
 
 - Learned Polymorphism and Interface. Refactored architecture of frameProcessor acordingly. 
+
+## 2026-07-11
+
+## Motion Analysis and Stateful vs Stateless Objects
+
+- Implemented Lucas-Kanade Optical Flow processor algorithm. 
+- Refactored image processing from a temporary-per-frame model to persistent processor instances managed by `ProcessorManager`. 
+

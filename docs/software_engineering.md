@@ -97,3 +97,52 @@ The build system must also know that the file exists.
 For CMake projects, every new implementation file should be added to `add_executable(...)` (or `target_sources(...)`).
 
 Otherwise the compiler will ignore the file, which may lead to confusing IntelliSense or linker errors.
+
+## Stateful vs Stateless Objects
+
+Some algorithms only process the current frame.
+
+Examples:
+
+- Grayscale
+- Gaussian Blur
+- Canny
+
+These processors are **stateless**.
+
+---
+
+Algorithms such as Optical Flow require memory from previous frames.
+
+Examples:
+
+- Previous frame
+- Previously tracked points
+
+These are **stateful**.
+
+Creating a new object every frame destroys that memory.
+
+Instead, create processors once and reuse them during the application's lifetime.
+
+### ProcessorManager
+
+Instead of creating processors inside a `switch` every frame:
+
+```cpp
+GrayProcessor processor;
+processor.process(frame);
+```
+
+store persistent processor instances:
+
+```text
+ProcessorManager
+    ├── GrayProcessor
+    ├── BlurProcessor
+    ├── CannyProcessor
+    ├── ...
+    └── OpticalFlowProcessor
+```
+
+Each processor owns its internal state independently.

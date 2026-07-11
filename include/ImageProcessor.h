@@ -12,7 +12,8 @@ enum class ProcessingMode
     Canny,
     Threshold,
     ShiTomasiCorners,
-    HarrisCorners
+    HarrisCorners,
+    OpticalFlow
 };
 
 // Function to process the frame based on the selected mode
