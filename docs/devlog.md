@@ -47,9 +47,12 @@
 
 ## 2026-07-12
 
-### ORB
+### ORB and BFMatcher
 
 - Implemented ORB processor to track local features
+- Implemented `BFMatcherProcessor` for frame-to-frame ORB descriptor matching (Hamming distance, cross-check enabled)
+- Visualized matches side-by-side via `cv::drawMatches`, with per-match random coloring for readability
+- Added first-frame guard (skips matching until `previousDescriptors` is populated)
 
 ### Architecture 
 
@@ -57,4 +60,5 @@
 - Replaced `processingModeToString()` with `IImageProcessor::name()`
 - Moved `ProcessingMode` into its own header
 - Simplified processor management through `ProcessorManager`
+
 

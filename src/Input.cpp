@@ -42,6 +42,9 @@ bool handleKeyboard(int key, const cv::Mat& frame, const std::string& screenshot
         case '9':
             currentMode = ProcessingMode::ORB;
             break;
+        case '0':
+            currentMode = ProcessingMode::BFMatcher;
+            break;
     }
     return true; // Continue running
 }

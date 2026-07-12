@@ -10,5 +10,6 @@ enum class ProcessingMode
     ShiTomasiCorners,
     HarrisCorners,
     OpticalFlow,
-    ORB
+    ORB,
+    BFMatcher
 };

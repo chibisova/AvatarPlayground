@@ -24,6 +24,7 @@ add_executable(SpatialAvatarPlayground
     src/processors/OpticalFlowProcessor.cpp
     src/ProcessorManager.cpp
     src/processors/ORBProcessor.cpp
+    src/processors/BFMatcherProcessor.cpp
 )
 
 target_include_directories(SpatialAvatarPlayground PRIVATE 

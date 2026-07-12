@@ -5,14 +5,19 @@
 // Processor for feature detector & descriptor
 namespace vision
 {
-    class ORBProcessor : public IImageProcessor    // Inherits from IImageProcessor
+    class BFMatcherProcessor : public IImageProcessor    // Inherits from IImageProcessor
     {
+        private:
+            cv::Mat previousFrame;
+            std::vector<cv::KeyPoint> previousKeypoints;
+            cv::Mat previousDescriptors;
+
         public:
             cv::Mat process(const cv::Mat& frame) override;
 
             const char* name() const override
             { 
-                return "ORB"; 
+                return "BFMatcher"; 
             }
     }; 
 }

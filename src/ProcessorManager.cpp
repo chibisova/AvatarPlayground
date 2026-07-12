@@ -9,6 +9,7 @@
 #include "processors/ShiTomasiProcessor.h"
 #include "processors/OpticalFlowProcessor.h"
 #include "processors/ORBProcessor.h"
+#include "processors/BFMatcherProcessor.h"
 
 namespace vision
 {
@@ -40,6 +41,9 @@ namespace vision
 
         processors[ProcessingMode::ORB] =
             std::make_unique<ORBProcessor>();
+
+        processors[ProcessingMode::BFMatcher] = 
+            std::make_unique<BFMatcherProcessor>();
     }
 
     IImageProcessor*
