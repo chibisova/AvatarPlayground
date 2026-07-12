@@ -39,6 +39,9 @@ bool handleKeyboard(int key, const cv::Mat& frame, const std::string& screenshot
         case '8':
             currentMode = ProcessingMode::OpticalFlow;
             break;
+        case '9':
+            currentMode = ProcessingMode::ORB;
+            break;
     }
     return true; // Continue running
 }

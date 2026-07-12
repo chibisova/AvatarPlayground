@@ -29,9 +29,6 @@ namespace vision
         }
         else {
             cv::calcOpticalFlowPyrLK(previousFrame, currentFrame, previousCorners, currentCorners, status, err, cv::Size(21, 21), 3);
-            std::cout << "Previous: " << previousCorners.size()
-                        << " Current: " << currentCorners.size()
-                        << " Status: " << status.size() << std::endl;
             
             // Draw motion vectors
             for (size_t i = 0; i < previousCorners.size(); i++)

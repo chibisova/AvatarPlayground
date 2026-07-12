@@ -51,7 +51,9 @@ int main() {
                                     ->process(frame);
 
         // Display text on the frame
-        drawHUD(processedFrame, fps, currentMode);
+        drawHUD(processedFrame, fps, processorManager
+                                    .getProcessor(currentMode)
+                                    ->name());
 
         // Display the frame
         cv::imshow("video", processedFrame);

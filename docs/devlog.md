@@ -28,14 +28,33 @@
 
 ## 2026-07-10
 
-## Motion Analysis
+### Architecture
 
-- Learned Polymorphism and Interface. Refactored architecture of frameProcessor acordingly. 
+- Learned interfaces and polymorphism
+- Refactored image processing into an extensible processor architecture
 
 ## 2026-07-11
 
-## Motion Analysis and Stateful vs Stateless Objects
+### Motion Analysis
 
-- Implemented Lucas-Kanade Optical Flow processor algorithm. 
-- Refactored image processing from a temporary-per-frame model to persistent processor instances managed by `ProcessorManager`. 
+- Implemented Lucas-Kanade Optical Flow
+- Learned the difference between stateless and stateful processors
+
+### Architecture
+
+- Introduced `ProcessorManager`
+- Replaced per-frame processor creation with persistent processor instances
+
+## 2026-07-12
+
+### ORB
+
+- Implemented ORB processor to track local features
+
+### Architecture 
+
+- Removed obsolete `processFrame()` switch
+- Replaced `processingModeToString()` with `IImageProcessor::name()`
+- Moved `ProcessingMode` into its own header
+- Simplified processor management through `ProcessorManager`
 

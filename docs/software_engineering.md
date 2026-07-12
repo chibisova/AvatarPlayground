@@ -146,3 +146,62 @@ ProcessorManager
 ```
 
 Each processor owns its internal state independently.
+
+## Smart Pointers
+
+Smart pointers automatically manage the lifetime of dynamically allocated objects.
+
+Common examples:
+
+- `std::unique_ptr` (C++ Standard Library)
+- `cv::Ptr` (OpenCV)
+
+### Why use them?
+
+Instead of manually writing
+
+```cpp
+delete ptr;
+```
+
+the object is automatically destroyed when the smart pointer goes out of scope.
+
+Benefits:
+
+- Prevents memory leaks
+- Prevents forgetting `delete`
+- Makes ownership explicit
+- Produces safer, cleaner code
+
+## Processor Manager
+
+Instead of creating a new processor every frame:
+
+```text
+processFrame()
+    ↓
+Create Processor
+    ↓
+process()
+```
+
+the application now owns one persistent instance of each processor:
+
+```text
+ProcessorManager
+        ↓
+GrayProcessor
+BlurProcessor
+...
+OpticalFlowProcessor
+ORBProcessor
+```
+
+### Benefits
+
+- Supports stateful algorithms (e.g. Optical Flow)
+- Avoids unnecessary object creation every frame
+- Easier to extend with new processors
+- Centralizes processor management
+
+

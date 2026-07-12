@@ -8,6 +8,7 @@
 #include "processors/HarrisProcessor.h"
 #include "processors/ShiTomasiProcessor.h"
 #include "processors/OpticalFlowProcessor.h"
+#include "processors/ORBProcessor.h"
 
 namespace vision
 {
@@ -36,6 +37,9 @@ namespace vision
         
         processors[ProcessingMode::OpticalFlow] =
             std::make_unique<OpticalFlowProcessor>();
+
+        processors[ProcessingMode::ORB] =
+            std::make_unique<ORBProcessor>();
     }
 
     IImageProcessor*

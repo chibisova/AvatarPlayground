@@ -2,7 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <string>
-#include "ImageProcessor.h"
+#include "ProcessingMode.h"
 
 // Function to handle keyboard input
 bool handleKeyboard(

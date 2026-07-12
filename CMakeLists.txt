@@ -14,7 +14,6 @@ add_executable(SpatialAvatarPlayground
     src/HUD.cpp
     src/Input.cpp
     src/Timing.cpp
-    src/ImageProcessor.cpp
     src/processors/OriginalProcessor.cpp
     src/processors/GrayProcessor.cpp
     src/processors/BlurProcessor.cpp
@@ -24,6 +23,7 @@ add_executable(SpatialAvatarPlayground
     src/processors/HarrisProcessor.cpp
     src/processors/OpticalFlowProcessor.cpp
     src/ProcessorManager.cpp
+    src/processors/ORBProcessor.cpp
 )
 
 target_include_directories(SpatialAvatarPlayground PRIVATE 
