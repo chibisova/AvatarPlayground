@@ -62,3 +62,9 @@
 - Simplified processor management through `ProcessorManager`
 
 
+## 2026-07-13
+
+### Feature Matching
+
+- Improved `BFMatcherProcessor` by replacing the fixed distance threshold with an adaptive minimum-distance filter.
+- Implemented `KNNMatcherProcessor` using KNN matching (`k = 2`) and Lowe's Ratio Test for more robust descriptor matching.

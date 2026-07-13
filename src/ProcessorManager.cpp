@@ -10,6 +10,7 @@
 #include "processors/OpticalFlowProcessor.h"
 #include "processors/ORBProcessor.h"
 #include "processors/BFMatcherProcessor.h"
+#include "processors/KNNMatcherProcessor.h"
 
 namespace vision
 {
@@ -44,6 +45,9 @@ namespace vision
 
         processors[ProcessingMode::BFMatcher] = 
             std::make_unique<BFMatcherProcessor>();
+
+        processors[ProcessingMode::KNNMatcher] = 
+            std::make_unique<KNNMatcherProcessor>();
     }
 
     IImageProcessor*

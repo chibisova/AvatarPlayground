@@ -11,5 +11,6 @@ enum class ProcessingMode
     HarrisCorners,
     OpticalFlow,
     ORB,
-    BFMatcher
+    BFMatcher,
+    KNNMatcher
 };

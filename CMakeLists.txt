@@ -25,6 +25,7 @@ add_executable(SpatialAvatarPlayground
     src/ProcessorManager.cpp
     src/processors/ORBProcessor.cpp
     src/processors/BFMatcherProcessor.cpp
+    src/processors/KNNMatcherProcessor.cpp
 )
 
 target_include_directories(SpatialAvatarPlayground PRIVATE 
