@@ -205,3 +205,88 @@ ORBProcessor
 - Centralizes processor management
 
 
+## Pointer vs Reference
+
+### Pointer
+
+A pointer stores the **address** of an object.
+
+```cpp
+cv::Mat frame;
+
+cv::Mat* ptr = &frame;
+```
+
+```
+ptr
+ |
+ v
+0x1234 ------> frame
+```
+
+Properties:
+
+- Can be `nullptr`
+- Can change what it points to
+
+---
+
+### Reference
+
+A reference is **another name (alias)** for an existing object.
+
+```cpp
+cv::Mat frame;
+
+cv::Mat& ref = frame;
+```
+
+Both `ref` and `frame` refer to the **same object**.
+
+```cpp
+ref = anotherMat;   // Copies anotherMat into frame
+```
+
+Properties:
+
+- Cannot be null
+- Must be initialized when declared
+- Cannot be rebound to another object
+
+---
+
+## Why use references?
+
+Passing by reference avoids copying large objects.
+
+Instead of
+
+```cpp
+void detect(cv::Mat image);
+```
+
+(which copies the entire image)
+
+use
+
+```cpp
+void detect(const cv::Mat& image);
+```
+
+Benefits:
+
+- No copy
+- Better performance
+- `const` prevents accidental modification
+
+---
+
+## When to use
+
+| Parameter | Use when |
+|-----------|----------|
+| `T` | Small types (`int`, `float`, `bool`, `char`) |
+| `const T&` | Large objects you only read (`cv::Mat`, `std::vector`, `std::string`) |
+| `T&` | Large objects you want to modify |
+| `T*` | The object may not exist (`nullptr`) or is optional |
+| `std::unique_ptr<T>` | The function or class owns the object's lifetime |

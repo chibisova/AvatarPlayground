@@ -17,7 +17,7 @@ namespace vision
         // auto orb = cv::ORB::create();
         orb->detectAndCompute(processed, cv::noArray(), keypoints, descriptors);
 
-        cv::drawKeypoints(frame, keypoints, processed, cv::Scalar(0, 255, 0), cv::DrawMatchesFlags::DEFAULT);
+        cv::drawKeypoints(frame, keypoints, processed, cv::Scalar::all(-1), cv::DrawMatchesFlags::DEFAULT);
 
         return processed;
     }
