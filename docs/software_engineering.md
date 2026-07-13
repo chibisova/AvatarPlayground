@@ -59,7 +59,7 @@ Functions should:
 - hide implementation details,
 - return only what the caller needs.
 
-## Dispatch Tables (Future Refactoring)
+## Dispatch Tables (Previous Design)
 
 When the number of processing modes grows, replacing a large `switch` statement with a dispatch table can improve maintainability.
 
@@ -173,7 +173,7 @@ Benefits:
 - Makes ownership explicit
 - Produces safer, cleaner code
 
-## Processor Manager
+## Processor Manager Update
 
 Instead of creating a new processor every frame:
 
@@ -204,89 +204,56 @@ ORBProcessor
 - Easier to extend with new processors
 - Centralizes processor management
 
+## Interface-Based Architecture
 
-## Pointer vs Reference
-
-### Pointer
-
-A pointer stores the **address** of an object.
+Processors implement a common interface instead of exposing their concrete types.
 
 ```cpp
-cv::Mat frame;
-
-cv::Mat* ptr = &frame;
+class IImageProcessor
+{
+public:
+    virtual cv::Mat process(const cv::Mat& frame) = 0;
+    virtual const char* name() const = 0;
+};
 ```
 
-```
-ptr
- |
- v
-0x1234 ------> frame
-```
+### Benefits
 
-Properties:
+- Loose coupling
+- Easy to add new processors
+- Callers depend on the interface, not the implementation
 
-- Can be `nullptr`
-- Can change what it points to
+Example:
+
+```cpp
+processorManager
+    .getProcessor(currentMode)
+    ->process(frame);
+```
 
 ---
 
-### Reference
+## Strategy Pattern (Practical)
 
-A reference is **another name (alias)** for an existing object.
+Different image processing algorithms share the same interface and can be selected at runtime.
 
-```cpp
-cv::Mat frame;
-
-cv::Mat& ref = frame;
+```text
+Current Mode
+      │
+      ▼
+ProcessorManager
+      │
+      ├── GrayProcessor
+      ├── CannyProcessor
+      ├── OpticalFlowProcessor
+      ├── ORBProcessor
+      └── KNNMatcherProcessor
 ```
 
-Both `ref` and `frame` refer to the **same object**.
+The application does not need to know *which* processor is executing—only that every processor implements the same interface.
 
-```cpp
-ref = anotherMat;   // Copies anotherMat into frame
-```
+### Benefits
 
-Properties:
-
-- Cannot be null
-- Must be initialized when declared
-- Cannot be rebound to another object
-
----
-
-## Why use references?
-
-Passing by reference avoids copying large objects.
-
-Instead of
-
-```cpp
-void detect(cv::Mat image);
-```
-
-(which copies the entire image)
-
-use
-
-```cpp
-void detect(const cv::Mat& image);
-```
-
-Benefits:
-
-- No copy
-- Better performance
-- `const` prevents accidental modification
-
----
-
-## When to use
-
-| Parameter | Use when |
-|-----------|----------|
-| `T` | Small types (`int`, `float`, `bool`, `char`) |
-| `const T&` | Large objects you only read (`cv::Mat`, `std::vector`, `std::string`) |
-| `T&` | Large objects you want to modify |
-| `T*` | The object may not exist (`nullptr`) or is optional |
-| `std::unique_ptr<T>` | The function or class owns the object's lifetime |
+- Open for extension
+- Easy runtime switching
+- Cleaner `main.cpp`

@@ -19,7 +19,7 @@
 
 ## 2026-07-09
 
-## Classical Image Processing completed
+### Classical Image Processing completed
 
 - Added Gaussian blur, Canny edge detection
 - Added adaptive thresholding

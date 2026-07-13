@@ -565,6 +565,7 @@ Good Matches
 
 ## Summary of learned concepts
 
+```
 Corner Detection
     ↓
 Harris
@@ -589,3 +590,4 @@ RANSAC
 Homography
 Camera Motion
 SLAM
+```
