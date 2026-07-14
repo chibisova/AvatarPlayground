@@ -85,3 +85,166 @@ Because grayscale images no longer store color information, drawing colored over
 
 - converting back to BGR, or
 - visualizing on a separate color image.
+
+## cv::Mat
+
+Represents an image (matrix).
+
+Common operations:
+
+```cpp
+frame.clone();
+frame.cols;
+frame.rows;
+```
+
+---
+
+## Color Conversion
+
+Convert between image color spaces.
+
+```cpp
+cv::cvtColor(
+    frame,
+    gray,
+    cv::COLOR_BGR2GRAY
+);
+```
+
+---
+
+## Feature Detection
+
+### ORB
+
+```cpp
+auto orb = cv::ORB::create();
+
+orb->detectAndCompute(
+    image,
+    cv::noArray(),
+    keypoints,
+    descriptors
+);
+```
+
+Returns
+
+- `std::vector<cv::KeyPoint>`
+- `cv::Mat descriptors`
+
+---
+
+## Descriptor Matching
+
+### BFMatcher
+
+```cpp
+cv::BFMatcher matcher(
+    cv::NORM_HAMMING,
+    false
+);
+```
+
+Common methods
+
+```cpp
+matcher.match(...)
+matcher.knnMatch(...)
+```
+
+Use `cv::NORM_HAMMING` with ORB descriptors.
+
+---
+
+## Drawing Utilities
+
+Draw detected features.
+
+```cpp
+cv::drawKeypoints(...)
+```
+
+Draw descriptor matches.
+
+```cpp
+cv::drawMatches(...)
+```
+
+Draw primitives.
+
+```cpp
+cv::circle(...)
+cv::line(...)
+cv::rectangle(...)
+cv::putText(...)
+```
+
+---
+
+## noArray()
+
+Represents an empty optional OpenCV input/output array.
+
+Useful when no mask is provided.
+
+```cpp
+cv::noArray()
+```
+
+Example
+
+```cpp
+orb->detectAndCompute(
+    gray,
+    cv::noArray(),
+    keypoints,
+    descriptors
+);
+```
+
+---
+
+## cv::Ptr
+
+OpenCV smart pointer.
+
+Used by many factory functions.
+
+```cpp
+cv::Ptr<cv::ORB> orb =
+    cv::ORB::create();
+```
+
+Equivalent modern C++ syntax:
+
+```cpp
+auto orb = cv::ORB::create();
+```
+
+## Homography Estimation
+
+Estimate a perspective transformation between two sets of corresponding points.
+
+```cpp
+cv::Mat H = cv::findHomography(
+    previousPoints,
+    currentPoints,
+    cv::RANSAC,
+    3.0,
+    inlierMask
+);
+```
+
+### Parameters
+
+- `previousPoints` – source image points
+- `currentPoints` – destination image points
+- `cv::RANSAC` – robust estimation method
+- `3.0` – reprojection error threshold (pixels)
+- `inlierMask` – output mask identifying inlier correspondences
+
+### Output
+
+Returns a `3×3` homography matrix describing the perspective transformation between the two images.

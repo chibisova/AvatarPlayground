@@ -49,6 +49,9 @@ bool handleKeyboard(int key, const cv::Mat& frame, const std::string& screenshot
         case 'K':
             currentMode = ProcessingMode::KNNMatcher;
             break;
+        case 'r':
+        case 'R':
+            currentMode = ProcessingMode::RANSAC;
     }
     return true; // Continue running
 }

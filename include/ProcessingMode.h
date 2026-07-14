@@ -12,5 +12,6 @@ enum class ProcessingMode
     OpticalFlow,
     ORB,
     BFMatcher,
-    KNNMatcher
+    KNNMatcher,
+    RANSAC
 };

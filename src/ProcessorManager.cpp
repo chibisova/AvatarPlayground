@@ -11,6 +11,7 @@
 #include "processors/ORBProcessor.h"
 #include "processors/BFMatcherProcessor.h"
 #include "processors/KNNMatcherProcessor.h"
+#include "processors/RANSACProcessor.h"
 
 namespace vision
 {
@@ -48,6 +49,9 @@ namespace vision
 
         processors[ProcessingMode::KNNMatcher] = 
             std::make_unique<KNNMatcherProcessor>();
+
+        processors[ProcessingMode::RANSAC] = 
+            std::make_unique<RANSACProcessor>();
     }
 
     IImageProcessor*

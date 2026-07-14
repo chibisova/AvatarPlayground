@@ -591,3 +591,32 @@ Homography
 Camera Motion
 SLAM
 ```
+## RANSAC (Random Sample Consensus)
+
+### Problem
+
+Even after descriptor matching, some correspondences are incorrect (outliers).
+
+Using all matches directly can produce an incorrect transformation.
+
+### Idea
+
+1. Randomly sample a small subset of correspondences.
+2. Estimate a transformation.
+3. Count how many correspondences agree with it (inliers).
+4. Repeat many times.
+5. Keep the transformation supported by the largest number of inliers.
+
+### Inlier Test
+
+A correspondence is an **inlier** if the transformed point is sufficiently close to its observed position.
+
+Otherwise it is an **outlier**.
+
+### Output
+
+RANSAC returns:
+
+- the estimated transformation (e.g. homography)
+- an inlier mask indicating which correspondences support the model
+
