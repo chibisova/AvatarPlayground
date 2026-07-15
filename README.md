@@ -80,7 +80,7 @@ Avatar Playground is developed incrementally, with each stage building upon prev
 
 ### Geometric Vision
 
-- [ ] Essential Matrix Estimation
+- [x] Essential Matrix Estimation
 - [ ] Camera Pose Estimation (PnP)
 - [ ] Epipolar Geometry
 - [ ] Visual Odometry

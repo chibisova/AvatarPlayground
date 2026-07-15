@@ -68,3 +68,21 @@
 
 - Improved `BFMatcherProcessor` by replacing the fixed distance threshold with an adaptive minimum-distance filter.
 - Implemented `KNNMatcherProcessor` using KNN matching (`k = 2`) and Lowe's Ratio Test for more robust descriptor matching.
+
+## 2026-07-14
+
+### RANSAC Homography Estimation
+
+- Implemented `RANSACProcessor` using ORB features, KNN matching, and Lowe's Ratio Test.
+- Added homography estimation with `cv::findHomography(..., cv::RANSAC)`.
+- Filtered descriptor matches using the returned inlier mask to keep only geometrically consistent correspondences.
+
+## 2026-07-15
+
+### Essential Matrix & Camera Motion Estimation
+
+- Implemented `MotionEstimationProcessor` using ORB feature detection with KNN matching and Lowe's Ratio Test
+- Estimated the Essential Matrix using `cv::findEssentialMat()`
+- Recovered relative camera rotation (`R`) and translation (`t`) using `cv::recoverPose()`
+- Added approximate camera intrinsic matrix generation through `CameraCalibration`
+- Introduced temporary camera calibration initialization using image dimensions

@@ -248,3 +248,51 @@ cv::Mat H = cv::findHomography(
 ### Output
 
 Returns a `3×3` homography matrix describing the perspective transformation between the two images.
+
+## Camera Motion Estimation
+
+### `cv::findEssentialMat()`
+
+Computes the Essential Matrix from corresponding feature points in two calibrated images.
+
+Inputs:
+
+- Previous image points
+- Current image points
+- Camera intrinsic matrix (`K`)
+
+Returns:
+
+- Essential Matrix (`E`)
+
+Optionally returns an inlier mask from RANSAC.
+
+---
+
+### `cv::recoverPose()`
+
+Decomposes the Essential Matrix into camera motion.
+
+Inputs:
+
+- Essential Matrix (`E`)
+- Previous image points
+- Current image points
+- Camera intrinsic matrix (`K`)
+
+Outputs:
+
+- Rotation matrix (`R`)
+- Translation vector (`t`)
+- Number of inlier correspondences
+
+---
+
+### Function Overloads
+
+Many OpenCV functions provide multiple overloads with different parameter orders.
+
+Example:
+
+```cpp
+cv::recoverPose(E, points1, points2, K, R, t);

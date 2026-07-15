@@ -620,3 +620,71 @@ RANSAC returns:
 - the estimated transformation (e.g. homography)
 - an inlier mask indicating which correspondences support the model
 
+## Essential Matrix
+
+### Purpose
+
+Estimate the relative motion between two calibrated camera views.
+
+Unlike homography, the Essential Matrix models general 3D camera motion and is suitable for visual odometry.
+
+### Pipeline
+
+ORB
+→ Feature Matching
+→ Lowe's Ratio Test
+→ Essential Matrix (`findEssentialMat`)
+→ Camera Pose (`recoverPose`)
+
+### Inputs
+
+- Previous frame keypoints
+- Current frame keypoints
+- Camera intrinsic matrix (K)
+
+### Output
+
+Essential Matrix (`E`)
+
+The Essential Matrix encodes the relative geometric relationship between two calibrated camera views.
+
+It is not the camera pose itself.
+
+---
+
+## Camera Intrinsics (K)
+
+The intrinsic matrix describes the internal properties of a camera.
+
+It maps camera-space coordinates onto image pixels.
+
+Typical form:
+
+| fx  0  cx |
+| 0  fy  cy |
+| 0   0   1 |
+
+where:
+
+- `fx`, `fy` — focal lengths
+- `cx`, `cy` — principal point (image center)
+
+For learning purposes, the intrinsic matrix can be approximated from the image resolution.
+
+In production systems, it is obtained through camera calibration.
+
+---
+
+## Camera Pose Recovery
+
+`cv::recoverPose()` decomposes the Essential Matrix into:
+
+- Rotation matrix (`R`)
+- Translation vector (`t`)
+
+These describe the camera motion between two consecutive frames.
+
+The translation direction is recovered, but its absolute scale is unknown in monocular visual odometry.
+
+The function also returns the number of geometrically consistent inlier correspondences.
+

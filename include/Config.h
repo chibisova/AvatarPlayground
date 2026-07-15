@@ -10,4 +10,5 @@ namespace Config
     constexpr int MAX_TRACKED_POINTS = 100;
     constexpr int MIN_TRACKED_POINTS = 40;
     constexpr float LOWE_RATIO = 0.75f;
+    inline cv::Mat CAMERA_INTRINSICS;
 }

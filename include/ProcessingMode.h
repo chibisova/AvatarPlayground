@@ -13,5 +13,6 @@ enum class ProcessingMode
     ORB,
     BFMatcher,
     KNNMatcher,
-    RANSAC
+    RANSAC,
+    MotionEstimation
 };

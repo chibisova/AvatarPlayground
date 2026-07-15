@@ -12,6 +12,7 @@
 #include "processors/BFMatcherProcessor.h"
 #include "processors/KNNMatcherProcessor.h"
 #include "processors/RANSACProcessor.h"
+#include "processors/MotionEstimationProcessor.h"
 
 namespace vision
 {
@@ -52,6 +53,9 @@ namespace vision
 
         processors[ProcessingMode::RANSAC] = 
             std::make_unique<RANSACProcessor>();
+
+        processors[ProcessingMode::MotionEstimation] =
+            std::make_unique<MotionEstimationProcessor>();
     }
 
     IImageProcessor*

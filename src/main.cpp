@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Timing.h"
 #include "ProcessorManager.h"
+#include "CameraCalibration.h"
 
 
 
@@ -39,6 +40,8 @@ int main() {
         cam >> frame;
 
         cv::flip(frame, frame, 1);
+
+        Config::CAMERA_INTRINSICS = vision::CameraCalibration::createIntrinsicMatrix(frame.cols, frame.rows);
 
         if (frame.empty()) {
             std::cerr << "Error: Empty frame captured." << std::endl;
