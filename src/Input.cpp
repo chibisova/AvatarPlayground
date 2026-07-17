@@ -52,9 +52,11 @@ bool handleKeyboard(int key, const cv::Mat& frame, const std::string& screenshot
         case 'r':
         case 'R':
             currentMode = ProcessingMode::RANSAC;
+            break;
         case 'm':
         case 'M':
             currentMode = ProcessingMode::MotionEstimation;
+            break;
     }
     return true; // Continue running
 }
