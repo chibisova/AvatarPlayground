@@ -1,7 +1,7 @@
 # ELITE: Efficient Gaussian Head Avatar from a Monocular Video via Learned Initialization andTEst-time Generative Adaptation
 
-Comment: Gaussian avatars with identity preservation
 Github: https://github.com/kaist-ami/elite
+
 Project page: https://kim-youwang.github.io/elite
 
 *Research quesiton*: existing methods lean on either a 3D data prior (generalizes poorly in-the-wild) or a 2D generative prior (diffusion models - slow, identity-hallucinating). 
