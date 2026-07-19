@@ -13,7 +13,7 @@ Project page: https://kim-youwang.github.io/elite
 
 *Results*: beats FlashAvatar, SplattingAvatar, CAP4D, SynShot on PSNR/LPIPS/CSIM (identity similarity) while being ~60× faster in image generation speed than full-diffusion 2D-prior methods and producing full torso/shoulder geometry, which prior methods skip.
 
-![ELITE.png](/ELITE.png)
+![ELITE.png](ELITE.png)
 
 ## Core ideas:
 
