@@ -11,4 +11,8 @@ namespace Config
     constexpr int MIN_TRACKED_POINTS = 40;
     constexpr float LOWE_RATIO = 0.75f;
     inline cv::Mat CAMERA_INTRINSICS;
+    // 0 → iPhone
+    // 1 → MacBook camera
+    // 2 → Virtual camera
+    inline int CAMERA_INDEX = 1;
 }

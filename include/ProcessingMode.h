@@ -14,5 +14,6 @@ enum class ProcessingMode
     BFMatcher,
     KNNMatcher,
     RANSAC,
-    MotionEstimation
+    MotionEstimation,
+    VisualOdometry
 };

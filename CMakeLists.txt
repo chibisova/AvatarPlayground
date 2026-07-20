@@ -29,6 +29,7 @@ add_executable(SpatialAvatarPlayground
     src/processors/RANSACProcessor.cpp
     src/processors/ShiTomasiProcessor.cpp
     src/processors/ThresholdProcessor.cpp
+    src/VisualOdometry.cpp
     
 )
 

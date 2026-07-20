@@ -7,6 +7,21 @@
 
 namespace vision
 {
+    const cv::Mat& MotionEstimationProcessor::getRotation() const
+    {
+        return relativeRotation;
+    }
+
+    const cv::Mat& MotionEstimationProcessor::getTranslation() const
+    {
+        return relativeTranslation;
+    }
+
+    bool MotionEstimationProcessor::hasValidPose() const
+    {
+        return poseValid;
+    }
+
     cv::Mat MotionEstimationProcessor::process(const cv::Mat& frame)
     {
         std::vector<cv::KeyPoint> currentKeypoints;
@@ -21,23 +36,22 @@ namespace vision
         const cv::Mat& K = Config::CAMERA_INTRINSICS; // Temperal Camera calibration approximation
         cv::Mat E;
         cv::Mat essentialMask;
-        cv::Mat R;
-        cv::Mat t;
+        
 
         cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
         // Create matching pairs of keypoints based on the descriptors
         auto orb = cv::ORB::create();
         orb->detectAndCompute(gray, cv::noArray(), currentKeypoints, currentDescriptors);
+
         
-        if (!previousDescriptors.empty())
+        if (!previousDescriptors.empty() && !currentDescriptors.empty())
         {
             // Hamming distance suits ORB's binary descriptors; crossCheck=true keeps only mutual best-matches
             cv::BFMatcher matcher(
                 cv::NORM_HAMMING,
                 false // Disable crossCheck so KNN can return the two nearest neighbors
             );
-            
             // Use KNN matcher to get 2 best matches per descriptor
             matcher.knnMatch(previousDescriptors, currentDescriptors, knnMatches, 2); 
 
@@ -49,6 +63,8 @@ namespace vision
                 previousFrame = frame.clone();
                 previousDescriptors = currentDescriptors;
                 previousKeypoints = currentKeypoints;
+
+                poseValid = false;
                 
                 return output;
             } 
@@ -82,10 +98,22 @@ namespace vision
                 previousDescriptors = currentDescriptors;
                 previousKeypoints = currentKeypoints;
 
+                poseValid = false;
+
                 return output;
             }
 
             E = cv::findEssentialMat(previousPoints, currentPoints, K, cv::RANSAC, 0.999, 1.0, essentialMask);
+            std::cout
+            << "E size: "
+            << E.rows
+            << " x "
+            << E.cols
+            << std::endl;
+
+            std::cout << "Good matches: "
+            << goodMatches.size()
+            << '\n';
 
             if (E.empty()){
                 // Estimation failed 
@@ -97,17 +125,39 @@ namespace vision
                 previousDescriptors = currentDescriptors;
                 previousKeypoints = currentKeypoints;
 
+                poseValid = false;
+
                 return output;
             } 
+
+            if (E.cols > 3)
+            {
+                E = E.colRange(0,3).clone();
+            }
+
             // Get Camera Rotation and Translation matrices
             // inliers - how many matches were geometrically consistent
-            std::cout << K.rows << " x " << K.cols << std::endl;
-            std::cout << K << std::endl;
-            int inliers = cv::recoverPose(E, previousPoints, currentPoints, K, R, t); 
+            int inliers = cv::recoverPose(E, previousPoints, currentPoints, K, relativeRotation, relativeTranslation); 
+            
+            // Check whether the pose recovery was successful
+            double ratio = static_cast<double>(inliers) / goodMatches.size();
+
+            if (ratio < 0.25)
+            {
+                output = frame.clone();
+
+                previousFrame = frame.clone();
+                previousDescriptors = currentDescriptors;
+                previousKeypoints = currentKeypoints;
+                poseValid = false;
+                return output;
+            }
+
+            poseValid = true;
             
             std::cout << "Inliers: " << inliers << '\n';
-            std::cout << "Rotation:\n" << R << std::endl;
-            std::cout << "Translation:\n" << t << std::endl;            
+            std::cout << "Relative rotation:\n" << relativeRotation << std::endl;
+            std::cout << "Relative Translation:\n" << relativeTranslation << std::endl;            
 
             for (int i = 0; i < goodMatches.size(); ++i)
             {
@@ -116,7 +166,10 @@ namespace vision
             }
             cv::drawMatches(previousFrame, previousKeypoints, frame, currentKeypoints, inlierMatches, output);
         } else {
+            
             output = frame.clone();
+
+            poseValid = false;
         }
         previousFrame = frame.clone();
         previousDescriptors = currentDescriptors;

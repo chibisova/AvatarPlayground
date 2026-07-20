@@ -7,6 +7,8 @@
 #include "Timing.h"
 #include "ProcessorManager.h"
 #include "CameraCalibration.h"
+#include "VisualOdometry.h"
+#include "processors/MotionEstimationProcessor.h"
 
 
 
@@ -17,8 +19,10 @@ int main() {
     ProcessingMode currentMode = ProcessingMode::Original; // Default processing mode
     vision::ProcessorManager processorManager;
 
-    // Open the default camera (camera index 0)
-    cv::VideoCapture cam(0);
+    vision::VisualOdometry visualOdometry;
+
+    // Open the default camera
+    cv::VideoCapture cam(Config::CAMERA_INDEX);
 
     if (!cam.isOpened()) {
         std::cerr << "Error: Could not open the camera." << std::endl;
@@ -49,14 +53,28 @@ int main() {
         }
 
         // Apply image processing based on the current mode
-        cv::Mat processedFrame = processorManager
-                                    .getProcessor(currentMode)
-                                    ->process(frame);
+        auto* processor =
+        processorManager.getProcessor(currentMode);
+    
+        cv::Mat processedFrame =
+            processor->process(frame);
+
+        if (currentMode == ProcessingMode::MotionEstimation)
+        {
+            auto* motion = dynamic_cast<vision::MotionEstimationProcessor*>(processor);
+        
+            if (motion && motion->hasValidPose())
+            {
+                visualOdometry.update(
+                    motion->getRotation(),
+                    motion->getTranslation());
+            
+                cv::imshow("Trajectory", visualOdometry.getTrajectory());
+            }
+        }
 
         // Display text on the frame
-        drawHUD(processedFrame, fps, processorManager
-                                    .getProcessor(currentMode)
-                                    ->name());
+        drawHUD(processedFrame, fps, processor->name());
 
         // Display the frame
         cv::imshow("video", processedFrame);

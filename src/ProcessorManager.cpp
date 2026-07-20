@@ -56,7 +56,7 @@ namespace vision
 
         processors[ProcessingMode::MotionEstimation] =
             std::make_unique<MotionEstimationProcessor>();
-    }
+    } 
 
     IImageProcessor*
     ProcessorManager::getProcessor(ProcessingMode mode)
