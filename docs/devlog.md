@@ -86,3 +86,46 @@
 - Recovered relative camera rotation (`R`) and translation (`t`) using `cv::recoverPose()`
 - Added approximate camera intrinsic matrix generation through `CameraCalibration`
 - Introduced temporary camera calibration initialization using image dimensions
+
+
+## 2026-07-17
+
+### Motion Estimation
+
+- Fixed processing mode switching and keyboard handling
+- Refactored motion estimation pipeline
+
+## 2026-07-19
+
+### Research
+
+- Paper summary: ELITE
+- Paper summary: LeGO
+
+## 2026-07-20
+
+#### Motion Estimation
+
+- Implemented Essential Matrix estimation using `cv::findEssentialMat()`
+- Implemented relative camera pose recovery using `cv::recoverPose()`
+- Added temporary camera intrinsic matrix approximation
+- Exposed relative rotation and translation through public getters
+- Added pose validity checks and confidence gating using the number of inliers
+- Filtered unreliable pose estimates before propagation to Visual Odometry
+
+#### Visual Odometry
+
+- Implemented `VisualOdometry` module
+- Represented camera poses as 4×4 homogeneous transformation matrices
+- Implemented incremental pose composition (`globalPose = globalPose * relativePose`)
+- Added persistent 2D trajectory visualization
+- Drew camera trajectory in the X–Z plane
+- Added trajectory window and real-time visualization
+
+#### Debugging
+
+- Fixed incorrect `recoverPose()` parameter order
+- Fixed OpenCV camera intrinsic matrix initialization
+- Investigated instability caused by low-inlier Essential Matrix estimation
+- Added minimum inlier threshold to reject unstable pose estimates
+- Identified dynamic scene objects as a major source of Visual Odometry drift

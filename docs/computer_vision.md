@@ -688,3 +688,53 @@ The translation direction is recovered, but its absolute scale is unknown in mon
 
 The function also returns the number of geometrically consistent inlier correspondences.
 
+---
+
+## Motion Validation
+
+Although `cv::recoverPose()` always returns a relative camera pose, the estimate is not always reliable.
+
+Sources of failure include:
+
+- Incorrect feature matches
+- Dynamic objects in the scene
+- Low camera motion
+- Degenerate geometric configurations
+
+Therefore, pose estimates should be validated before being used.
+
+Common validation strategies include:
+
+- Minimum number of inliers
+- Inlier ratio
+- Reprojection error
+- Temporal consistency
+
+For this project, a minimum inlier threshold is used:
+
+```cpp
+if (inliers < MIN_INLIERS)
+    poseValid = false;
+```
+
+## Visual Odometry Pipeline
+
+Current implementation:
+
+Frame
+↓
+ORB Features
+↓
+Descriptor Matching
+↓
+Lowe Ratio Test
+↓
+Essential Matrix Estimation
+↓
+Pose Recovery
+↓
+Pose Validation
+↓
+Relative Pose
+↓
+Trajectory Integration
