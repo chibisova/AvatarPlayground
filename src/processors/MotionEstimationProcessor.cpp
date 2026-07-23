@@ -17,10 +17,21 @@ namespace vision
         return relativeTranslation;
     }
 
+    const std::vector<cv::Point2f>& MotionEstimationProcessor::getPreviousPoints() const
+    {
+        return previousPoints;
+    }
+    
+    const std::vector<cv::Point2f>& MotionEstimationProcessor::getCurrentPoints() const
+    {
+        return currentPoints;
+    }
+
     bool MotionEstimationProcessor::hasValidPose() const
     {
         return poseValid;
     }
+
 
     cv::Mat MotionEstimationProcessor::process(const cv::Mat& frame)
     {
@@ -30,8 +41,6 @@ namespace vision
         cv::Mat output;
         std::vector<cv::DMatch> goodMatches;        
         std::vector<std::vector<cv::DMatch>> knnMatches;
-        std::vector<cv::Point2f> previousPoints;
-        std::vector<cv::Point2f> currentPoints;
         std::vector<cv::DMatch> inlierMatches; // For visualization of RANSAC
         const cv::Mat& K = Config::CAMERA_INTRINSICS; // Temperal Camera calibration approximation
         cv::Mat E;
@@ -84,6 +93,9 @@ namespace vision
                 }
             }
 
+            previousPoints.clear();
+            currentPoints.clear();
+
             for (const auto& match : goodMatches){
                 previousPoints.push_back(previousKeypoints[match.queryIdx].pt);
                 currentPoints.push_back(currentKeypoints[match.trainIdx].pt);
@@ -104,16 +116,10 @@ namespace vision
             }
 
             E = cv::findEssentialMat(previousPoints, currentPoints, K, cv::RANSAC, 0.999, 1.0, essentialMask);
-            std::cout
-            << "E size: "
-            << E.rows
-            << " x "
-            << E.cols
-            << std::endl;
+            
+            //std::cout << "E size: " << E.rows << " x " << E.cols << std::endl;
 
-            std::cout << "Good matches: "
-            << goodMatches.size()
-            << '\n';
+            //std::cout << "Good matches: " << goodMatches.size() << '\n';
 
             if (E.empty()){
                 // Estimation failed 

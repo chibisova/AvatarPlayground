@@ -2,7 +2,6 @@
 
 #include "processors/IImageProcessor.h" // Ensure this file defines the IImageProcessor class or struct
 
-// Processor for feature detector & descriptor
 namespace vision
 {
     class RANSACProcessor : public IImageProcessor    // Inherits from IImageProcessor

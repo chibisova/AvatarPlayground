@@ -9,7 +9,7 @@
 #include "CameraCalibration.h"
 #include "VisualOdometry.h"
 #include "processors/MotionEstimationProcessor.h"
-
+#include "processors/TriangulationProcessor.h"
 
 
 int main() {
@@ -20,6 +20,7 @@ int main() {
     vision::ProcessorManager processorManager;
 
     vision::VisualOdometry visualOdometry;
+    vision::TriangulationProcessor triangulationProcessor;
 
     // Open the default camera
     cv::VideoCapture cam(Config::CAMERA_INDEX);
@@ -65,9 +66,31 @@ int main() {
         
             if (motion && motion->hasValidPose())
             {
-                visualOdometry.update(
-                    motion->getRotation(),
-                    motion->getTranslation());
+                const auto& R = motion->getRotation();
+                const auto& t = motion->getTranslation();
+
+                const auto& previousPoints =
+                    motion->getPreviousPoints();
+
+                const auto& currentPoints =
+                    motion->getCurrentPoints();
+
+                // Visual Odometry
+                visualOdometry.update(R, t);
+
+                // Triangulation
+                triangulationProcessor.triangulate(
+                    R,
+                    t,
+                    previousPoints,
+                    currentPoints
+                );
+
+                std::cout << "Triangulated points: "
+                        << triangulationProcessor
+                                .getPoints3D()
+                                .rows
+                        << std::endl;
             
                 cv::imshow("Trajectory", visualOdometry.getTrajectory());
             }

@@ -20,7 +20,6 @@ namespace vision
         {
             cv::circle(output, corner, 5, cv::Scalar(0, 255, 0), -1);
         }
-        
         return output;
     }
 }

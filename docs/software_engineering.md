@@ -257,3 +257,69 @@ The application does not need to know *which* processor is executing—only that
 - Open for extension
 - Easy runtime switching
 - Cleaner `main.cpp`
+
+---
+
+## Pipeline Composition
+
+The system separates different responsibilities into independent
+components:
+
+``` text
+MotionEstimationProcessor
+        │
+        ├── Relative Rotation
+        ├── Relative Translation
+        │
+        ├──────────────► VisualOdometry
+        │                     │
+        │                     └── Camera Trajectory
+        │
+        └──────────────► TriangulationProcessor
+                              │
+                              └── Sparse 3D Points
+```
+
+`MotionEstimationProcessor` is responsible for estimating relative
+camera motion.
+
+`VisualOdometry` consumes the estimated motion and accumulates the
+global camera trajectory.
+
+`TriangulationProcessor` consumes camera geometry and matched 2D
+observations to reconstruct sparse 3D points.
+
+This separation follows the principle of **single responsibility**: each
+component performs one distinct stage of the computer vision pipeline.
+
+### Data Flow
+
+``` text
+Frame Pair
+    │
+    ▼
+MotionEstimationProcessor
+    │
+    ├── R ───────────────► VisualOdometry
+    │                           │
+    │                           ▼
+    │                     Camera Trajectory
+    │
+    ├── t ───────────────► TriangulationProcessor
+    │                           │
+    ├── 2D Correspondences ─────┘
+    │                           ▼
+    │                     Sparse 3D Points
+```
+
+The system is therefore structured as a pipeline of specialized
+components rather than one large processor.
+
+This makes it easier to:
+
+-   test each stage independently;
+-   replace individual algorithms;
+-   visualize intermediate results;
+-   extend the system toward 3D reconstruction, SLAM, and avatar
+    tracking.
+---
