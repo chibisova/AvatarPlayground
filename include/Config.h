@@ -14,5 +14,5 @@ namespace Config
     // 0 → iPhone
     // 1 → MacBook camera
     // 2 → Virtual camera
-    inline int CAMERA_INDEX = 0;
+    inline int CAMERA_INDEX = 1;
 }

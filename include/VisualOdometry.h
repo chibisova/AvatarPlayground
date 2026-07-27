@@ -2,6 +2,7 @@
 
 #include <opencv2/core.hpp>
 
+// Estimate how camera moves over time
 namespace vision
 {
     class VisualOdometry

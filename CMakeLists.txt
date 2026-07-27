@@ -26,6 +26,7 @@ add_executable(SpatialAvatarPlayground
     src/processors/OpticalFlowProcessor.cpp
     src/processors/ORBProcessor.cpp
     src/processors/OriginalProcessor.cpp
+    src/processors/PnPProcessor.cpp
     src/processors/RANSACProcessor.cpp
     src/processors/ShiTomasiProcessor.cpp
     src/processors/ThresholdProcessor.cpp
@@ -40,3 +41,15 @@ include)
 target_include_directories(SpatialAvatarPlayground PRIVATE ${OpenCV_INCLUDE_DIRS})
 
 target_link_libraries(SpatialAvatarPlayground PRIVATE ${OpenCV_LIBS})
+
+add_executable(PnPTest
+    src/tests/PnPTest.cpp
+    src/processors/PnPProcessor.cpp
+)
+target_link_libraries(PnPTest PRIVATE ${OpenCV_LIBS})
+
+target_include_directories(PnPTest PRIVATE
+    ${OpenCV_INCLUDE_DIRS}
+    ${PROJECT_SOURCE_DIR}/include
+
+)
