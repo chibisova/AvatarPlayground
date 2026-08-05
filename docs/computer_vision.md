@@ -716,25 +716,105 @@ For this project, a minimum inlier threshold is used:
 if (inliers < MIN_INLIERS)
     poseValid = false;
 ```
+---
 
-## Visual Odometry Pipeline
+## Visual Odometry
 
-Current implementation:
+Visual odometry estimates the camera's movement over time by accumulating relative poses between consecutive frames.
 
-Frame
-↓
-ORB Features
-↓
-Descriptor Matching
-↓
-Lowe Ratio Test
-↓
-Essential Matrix Estimation
-↓
-Pose Recovery
-↓
-Pose Validation
-↓
-Relative Pose
-↓
-Trajectory Integration
+For each pair of frames:
+
+``` text
+Frame N-1 → Frame N
+       │
+       ▼
+Relative rotation R
+Relative translation t
+       │
+       ▼
+Relative camera pose
+       │
+       ▼
+Accumulate over time
+       │
+       ▼
+Global camera trajectory
+```
+
+A relative pose can be represented using a homogeneous transformation matrix:
+
+\[ T =
+```{=tex}
+\begin{bmatrix}
+R & t \\
+0 & 1
+\end{bmatrix}
+```
+\]
+
+The global camera pose is updated by composing the previous global pose with the newly estimated relative pose.
+
+Because monocular visual odometry cannot directly recover absolute translation scale, the resulting trajectory has an arbitrary scale.
+
+---
+
+## Triangulation
+
+Given corresponding observations of the same feature in two frames and the relative camera poses, triangulation estimates the 3D position of the feature.
+
+``` text
+2D point in Frame 1
+        +
+2D point in Frame 2
+        +
+Camera poses
+        │
+        ▼
+Triangulation
+        │
+        ▼
+Estimated 3D point
+```
+
+OpenCV initially represents the result in homogeneous coordinates:
+
+\[ `\mathbf{X}`{=tex} =
+```{=tex}
+\begin{bmatrix}
+X \\
+Y \\
+Z \\
+W
+\end{bmatrix}
+```
+\]
+
+The Euclidean 3D position is obtained by dividing by (W):
+
+\[ x = `\frac{X}{W}`{=tex}, `\qquad`{=tex} y = `\frac{Y}{W}`{=tex},
+`\qquad`{=tex} z = `\frac{Z}{W}`{=tex} \]
+
+The resulting point cloud is sparse because it contains only visual features that were successfully detected and matched between frames.
+
+### Depth Validation
+
+Not every triangulated point is geometrically valid. Points with invalid or non-positive depth are rejected before being used as reconstructed scene points.
+
+This produces the following pipeline:
+
+``` text
+Feature Detection
+        ↓
+Feature Matching
+        ↓
+Geometric Verification
+        ↓
+Camera Pose Estimation
+        ↓
+Triangulation
+        ↓
+Depth Validation
+        ↓
+Sparse 3D Reconstruction
+```
+---

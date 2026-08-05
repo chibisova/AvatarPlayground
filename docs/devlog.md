@@ -137,3 +137,7 @@
 - Implemented `TriangulationProcessor` for estimating the 3D position of the matched visual features
 - Added depth validation to reject points with invalid or non-positive depth
 - Successfully reconstructed sparse 3D feature points from matched observations across two frames
+
+## 2026-08-05
+
+- Implemented 3D map from triangulation

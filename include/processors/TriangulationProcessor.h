@@ -12,7 +12,7 @@ namespace vision
         cv::Mat points3D; 
 
     public:
-        void triangulate(
+        std::vector<cv::Point3f> triangulate(
             const cv::Mat& R,
             const cv::Mat& t,
             const std::vector<cv::Point2f>& previousPoints,

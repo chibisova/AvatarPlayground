@@ -11,8 +11,9 @@ namespace vision
     {
         return points3D;
     }
-    
-    void TriangulationProcessor::triangulate(
+
+
+    std::vector<cv::Point3f> TriangulationProcessor::triangulate(
         const cv::Mat& R,
         const cv::Mat& t,
         const std::vector<cv::Point2f>& previousPoints,
@@ -22,13 +23,13 @@ namespace vision
         if (previousPoints.size() < 2 || currentPoints.size() < 2)
         {
             points3D.release();
-            return;
+            return {};
         }
 
         if (previousPoints.size() != currentPoints.size())
         {
             points3D.release();
-            return;
+            return {};
         }
         // Get camera's data
         const cv::Mat& K = Config::CAMERA_INTRINSICS;
@@ -48,6 +49,9 @@ namespace vision
 
         // Triangulate
         cv::Mat points4D;
+        std::vector<cv::Point3f> validPoints;
+        
+        validPoints.clear();
 
         cv::triangulatePoints(P1, P2, previousPoints, currentPoints, points4D);
 
@@ -80,15 +84,26 @@ namespace vision
             std::cout << points3D.row(i) << std::endl;
         }
 
+        // Map3DaddPoints();
+
         // Depth test
         int positiveDepth = 0;
 
         for (int i = 0; i < points3D.rows; ++i)
         {
             double Z = points3D.at<double>(i, 2);
+            double Y = points3D.at<double>(i, 1);
+            double X = points3D.at<double>(i, 0);
 
-            if (Z > 0)
+            if (Z > 0) {
                 positiveDepth++;
+
+                validPoints.emplace_back(
+                    static_cast<float>(X),
+                    static_cast<float>(Y),
+                    static_cast<float>(Z)
+                );
+            }
         }
 
         std::cout << "Points in front of camera: "
@@ -96,6 +111,8 @@ namespace vision
                 << " / "
                 << points3D.rows
                 << std::endl;
+        
+        return validPoints;
     }
 
 }

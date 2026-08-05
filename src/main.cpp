@@ -10,6 +10,7 @@
 #include "VisualOdometry.h"
 #include "processors/MotionEstimationProcessor.h"
 #include "processors/TriangulationProcessor.h"
+#include "Map3D.h"
 
 
 int main() {
@@ -21,6 +22,8 @@ int main() {
 
     vision::VisualOdometry visualOdometry;
     vision::TriangulationProcessor triangulationProcessor;
+
+    vision::Map3D map;
 
     // Open the default camera
     cv::VideoCapture cam(Config::CAMERA_INDEX);
@@ -79,13 +82,21 @@ int main() {
                 visualOdometry.update(R, t);
 
                 // Triangulation
-                triangulationProcessor.triangulate(
+                std::vector<cv::Point3f> newPoints = triangulationProcessor.triangulate(
                     R,
                     t,
                     previousPoints,
                     currentPoints
                 );
 
+                map.addPoints(newPoints);
+
+                std::cout << "New points: "
+                        << newPoints.size() << std::endl;
+
+                std::cout << "Map size: "
+                        << map.getPoints().size() << std::endl;
+                
                 std::cout << "Triangulated points: "
                         << triangulationProcessor
                                 .getPoints3D()

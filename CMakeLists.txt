@@ -15,6 +15,7 @@ add_executable(SpatialAvatarPlayground
     src/Input.cpp
     src/Timing.cpp
     src/CameraCalibration.cpp
+    src/Map3D.cpp
     src/ProcessorManager.cpp
     src/processors/BFMatcherProcessor.cpp
     src/processors/BlurProcessor.cpp
