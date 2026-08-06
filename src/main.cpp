@@ -11,6 +11,7 @@
 #include "processors/MotionEstimationProcessor.h"
 #include "processors/TriangulationProcessor.h"
 #include "Map3D.h"
+#include "MapPoint.h"
 
 
 int main() {
@@ -72,21 +73,23 @@ int main() {
                 const auto& R = motion->getRotation();
                 const auto& t = motion->getTranslation();
 
-                const auto& previousPoints =
-                    motion->getPreviousPoints();
+                const auto& previousKeypoints = motion->getPreviousKeypoints();
+                const auto& currentKeypoints = motion->getCurrentKeypoints();
+                const auto& previousDescriptors = motion->getPreviousDescriptors();
+                const auto& goodMatches = motion->getGoodMatches();
 
-                const auto& currentPoints =
-                    motion->getCurrentPoints();
 
                 // Visual Odometry
                 visualOdometry.update(R, t);
 
                 // Triangulation
-                std::vector<cv::Point3f> newPoints = triangulationProcessor.triangulate(
+                std::vector<vision::MapPoint> newPoints = triangulationProcessor.triangulate(
                     R,
                     t,
-                    previousPoints,
-                    currentPoints
+                    previousKeypoints,
+                    currentKeypoints,
+                    previousDescriptors,
+                    goodMatches
                 );
 
                 map.addPoints(newPoints);

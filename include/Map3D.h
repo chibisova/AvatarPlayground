@@ -3,17 +3,19 @@
 #include <opencv2/core.hpp>
 #include <vector>
 
+#include "MapPoint.h"
+
 namespace vision
 {
     class Map3D
     {
     private:
-        std::vector<cv::Point3f> mapPoints;
+        std::vector<MapPoint> mapPoints;
 
     public:
-        void addPoints(const std::vector<cv::Point3f>& points);
+        void addPoints(const std::vector<MapPoint>& points);
 
-        const std::vector<cv::Point3f>& getPoints() const;
+        const std::vector<MapPoint>& getPoints() const;
 
         void clear();
     };

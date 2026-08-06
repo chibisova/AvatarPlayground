@@ -818,3 +818,15 @@ Depth Validation
 Sparse 3D Reconstruction
 ```
 ---
+
+### Data Consistency
+
+Triangulation assumes that:
+
+- matched keypoints,
+- descriptors,
+- camera poses,
+
+all belong to the same pair of frames.
+
+---

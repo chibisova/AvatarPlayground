@@ -323,3 +323,33 @@ This makes it easier to:
 -   extend the system toward 3D reconstruction, SLAM, and avatar
     tracking.
 ---
+
+## State Snapshots
+
+### Problem
+
+Stateful pipelines often expose internal data through getters.
+
+If the internal state changes before the caller consumes it, the returned data may no longer correspond to the computation that produced it.
+
+### Solution
+
+Freeze (snapshot) the required state before mutating it.
+
+Example:
+
+```cpp
+matchedPreviousKeypoints = previousKeypoints;
+matchedPreviousDescriptors = previousDescriptors.clone();
+
+advanceFrame(frame);
+```
+
+Expose the frozen snapshot instead of mutable working buffers.
+
+### Lesson
+
+Data should remain valid for the entire lifetime of the computation that depends on it.
+
+A getter should never expose data whose meaning changes before the caller can use it.
+---

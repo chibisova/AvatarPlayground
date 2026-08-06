@@ -2,7 +2,7 @@
 
 namespace vision 
 {
-    void Map3D::addPoints(const std::vector<cv::Point3f>& points)
+    void Map3D::addPoints(const std::vector<MapPoint>& points)
     {
         mapPoints.insert(
             mapPoints.end(),
@@ -11,7 +11,7 @@ namespace vision
         );
     }
 
-    const std::vector<cv::Point3f>& Map3D::getPoints() const
+    const std::vector<MapPoint>& Map3D::getPoints() const
     {
         return mapPoints;
     }

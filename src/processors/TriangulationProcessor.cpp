@@ -13,13 +13,39 @@ namespace vision
     }
 
 
-    std::vector<cv::Point3f> TriangulationProcessor::triangulate(
+    std::vector<MapPoint> TriangulationProcessor::triangulate(
         const cv::Mat& R,
         const cv::Mat& t,
-        const std::vector<cv::Point2f>& previousPoints,
-        const std::vector<cv::Point2f>& currentPoints
+        const std::vector<cv::KeyPoint>& previousKeypoints,
+        const std::vector<cv::KeyPoint>& currentKeypoints,
+        const cv::Mat& previousDescriptors,
+        const std::vector<cv::DMatch>& goodMatches
     )
     {
+        std::cout << "Entering Triangulation\n";
+        std::cout << previousDescriptors.rows << '\n';
+
+        int maxIdx = -1;
+
+        for (const auto& m : goodMatches)
+            maxIdx = std::max(maxIdx, m.queryIdx);
+
+        std::cout << "largest queryIdx = "
+                << maxIdx
+                << '\n';
+
+        std::vector<cv::Point2f> previousPoints;
+        std::vector<cv::Point2f> currentPoints;
+
+        for (const auto& match : goodMatches)
+        {
+            previousPoints.push_back(
+                previousKeypoints[match.queryIdx].pt);
+
+            currentPoints.push_back(
+                currentKeypoints[match.trainIdx].pt);
+        }
+        
         if (previousPoints.size() < 2 || currentPoints.size() < 2)
         {
             points3D.release();
@@ -49,11 +75,25 @@ namespace vision
 
         // Triangulate
         cv::Mat points4D;
-        std::vector<cv::Point3f> validPoints;
+        std::vector<MapPoint> validPoints;
         
         validPoints.clear();
 
         cv::triangulatePoints(P1, P2, previousPoints, currentPoints, points4D);
+        std::cout
+            << "points4D.cols = "
+            << points4D.cols
+            << '\n';
+
+        std::cout
+            << "goodMatches.size() = "
+            << goodMatches.size()
+            << '\n';
+
+        std::cout
+            << "previousPoints.size() = "
+            << previousPoints.size()
+            << '\n';
 
         // Convert homogeneous coordinates to 3D
         points3D = cv::Mat::zeros(
@@ -91,6 +131,19 @@ namespace vision
 
         for (int i = 0; i < points3D.rows; ++i)
         {
+            assert(i < goodMatches.size());
+
+            int queryIdx = goodMatches[i].queryIdx;
+            if (queryIdx < 0 || queryIdx >= previousDescriptors.rows)
+            {
+                std::cout << "queryIdx = " << queryIdx << '\n';
+                std::cout << "rows     = " << previousDescriptors.rows << '\n';
+                std::cout << "goodMatches.size() = " << goodMatches.size() << '\n';
+                std::cout << "i = " << i << '\n';
+
+                continue;
+            }
+
             double Z = points3D.at<double>(i, 2);
             double Y = points3D.at<double>(i, 1);
             double X = points3D.at<double>(i, 0);
@@ -98,11 +151,21 @@ namespace vision
             if (Z > 0) {
                 positiveDepth++;
 
-                validPoints.emplace_back(
+                MapPoint point;
+
+                point.position = cv::Point3f(
                     static_cast<float>(X),
                     static_cast<float>(Y),
                     static_cast<float>(Z)
                 );
+
+                point.descriptor =
+                    previousDescriptors
+                        .row(goodMatches[i].queryIdx)
+                        .clone();
+
+                validPoints.push_back(point);
+                
             }
         }
 

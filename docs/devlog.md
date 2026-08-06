@@ -141,3 +141,17 @@
 ## 2026-08-05
 
 - Implemented 3D map from triangulation
+
+## 2026-08-06
+
+### 3D Mapping
+
+- Added `MapPoint` structure storing 3D position and ORB descriptor.
+- Extended `Map3D` to maintain a persistent sparse point cloud.
+
+### Architecture
+
+- Fixed descriptor lifetime bug between `MotionEstimationProcessor` and `TriangulationProcessor`.
+- Introduced frozen snapshots (`matchedPreviousKeypoints`, `matchedPreviousDescriptors`) before `advanceFrame()`.
+- Prevented frame-state mismatches between feature matches and descriptor storage.
+- Clarified ownership of frame-dependent data across pipeline stages.
