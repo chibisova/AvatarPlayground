@@ -778,16 +778,15 @@ Estimated 3D point
 
 OpenCV initially represents the result in homogeneous coordinates:
 
-\[ `\mathbf{X}`{=tex} =
-```{=tex}
+$$
+\mathbf{X} =
 \begin{bmatrix}
 X \\
 Y \\
 Z \\
 W
 \end{bmatrix}
-```
-\]
+$$
 
 The Euclidean 3D position is obtained by dividing by (W):
 
