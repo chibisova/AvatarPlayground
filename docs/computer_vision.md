@@ -790,8 +790,9 @@ $$
 
 The Euclidean 3D position is obtained by dividing by (W):
 
-\[ x = `\frac{X}{W}`{=tex}, `\qquad`{=tex} y = `\frac{Y}{W}`{=tex},
-`\qquad`{=tex} z = `\frac{Z}{W}`{=tex} \]
+$$
+x = \frac{X}{W}, \qquad y = \frac{Y}{W}, \qquad z = \frac{Z}{W}
+$$
 
 The resulting point cloud is sparse because it contains only visual features that were successfully detected and matched between frames.
 
