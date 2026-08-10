@@ -3,6 +3,10 @@
 #include "processors/IImageProcessor.h" // Ensure this file defines the IImageProcessor class or struct
 
 // Processor that detects Harris corners in an image
+/* 
+    This processor converts the input image to grayscale and then applies the Harris corner detection algorithm.
+    The output is an image highlighting the detected corners.
+*/
 namespace vision
 {
     class HarrisProcessor : public IImageProcessor    // Inherits from IImageProcessor

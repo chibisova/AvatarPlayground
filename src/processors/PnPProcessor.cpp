@@ -18,7 +18,7 @@ namespace vision
             return;        
         }
 
-        bool success = cv::solvePnP(objectPoints, imagePoints, Config::CAMERA_INTRINSICS, cv::noArray(), rvec, tvec);
+        bool success = cv::solvePnPRansac(objectPoints, imagePoints, Config::CAMERA_INTRINSICS, cv::noArray(), rvec, tvec);
 
         poseValid = success;
     }

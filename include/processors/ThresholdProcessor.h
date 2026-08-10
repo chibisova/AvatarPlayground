@@ -3,6 +3,7 @@
 #include "processors/IImageProcessor.h" // Ensure this file defines the IImageProcessor class or struct
 
 // Processor that applies adaptive thresholding to an image
+// This processor converts the input image to grayscale and then applies adaptive thresholding
 namespace vision
 {
     class ThresholdProcessor : public IImageProcessor    // Inherits from IImageProcessor

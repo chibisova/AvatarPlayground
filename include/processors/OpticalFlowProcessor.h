@@ -2,7 +2,11 @@
 
 #include "processors/IImageProcessor.h" // Ensure this file defines the IImageProcessor class or struct
 
-// Processor that tracs points motion over time
+// This processor uses optical flow to track the motion of points between consecutive frames
+/* 
+    Input: current frame, previous frame, previous corners
+    Output: current corners, status of each corner (found or not found)
+*/
 namespace vision
 {
     class OpticalFlowProcessor : public IImageProcessor    // Inherits from IImageProcessor

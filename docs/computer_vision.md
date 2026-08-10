@@ -675,7 +675,7 @@ In production systems, it is obtained through camera calibration.
 
 ---
 
-## Camera Pose Recovery
+## Camera Pose Recovery - Visual Odometry (VO)
 
 `cv::recoverPose()` decomposes the Essential Matrix into:
 
@@ -743,14 +743,13 @@ Global camera trajectory
 
 A relative pose can be represented using a homogeneous transformation matrix:
 
-\[ T =
-```{=tex}
+$$
+T =
 \begin{bmatrix}
 R & t \\
 0 & 1
 \end{bmatrix}
-```
-\]
+$$
 
 The global camera pose is updated by composing the previous global pose with the newly estimated relative pose.
 
@@ -828,5 +827,109 @@ Triangulation assumes that:
 - camera poses,
 
 all belong to the same pair of frames.
+
+---
+
+## 3D Mapping 
+
+Builds a sparse 3D representation of the world.
+
+```cpp
+MapPoint
+{
+    position;
+    descriptor;
+}
+```
+
+Each point in the map corresponds to a real physical feature in the environment.
+This sparse map is later used by Perspective-n-Point (PnP) to estimate the camera pose within the reconstructed environment.
+
+```
+          *
+     *
+               *
+          Camera
+
+   *
+              *
+
+        *
+```
+
+---
+## Perspective-n-Point (PnP) pose computation
+
+Estimates absolute camera pose(rotation, translation) within reconstructed world.
+
+Computes from give 3D map representation, current frame's list of 2D keypoints and camer's intrisic.
+
+Outputs:
+
+tvec — camera translation.
+rvec — camera rotation in Rodrigues (axis-angle) representation. It can be converted into a 3×3 rotation matrix using cv::Rodrigues().
+---
+
+## VO, Mapping, PnP
+
+Visual Odometry → estimates relative motion
+Mapping → builds the world representation
+PnP → estimates absolute camera pose within that world
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Visual Odometry
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Frame N-1
+      +
+Frame N
+      │
+      ▼
+ORB
+      ▼
+KNN BFMatcher
+      ▼
+Lowe Ratio
+      ▼
+findEssentialMat(RANSAC)
+      ▼
+recoverPose()
+      ▼
+Relative Pose (R,t)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Mapping
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Relative Pose
+      +
+Matched Features
+      ▼
+triangulatePoints()
+      ▼
+Sparse 3D Points
+      ▼
+Map3D
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PnP Localization
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Current Frame
+      +
+Map3D
+      ▼
+ORB
+      ▼
+BFMatcher
+      ▼
+Lowe Ratio
+      ▼
+3D-2D Correspondences
+      ▼
+solvePnPRansac()
+      ▼
+Absolute Camera Pose
+(rvec,tvec)
 
 ---

@@ -102,7 +102,7 @@
 - Paper summary: ELITE
 - Paper summary: LeGO
 
-## 2026-07-20
+## 2026-07-20~23
 
 #### Motion Estimation
 
@@ -130,13 +130,17 @@
 - Added minimum inlier threshold to reject unstable pose estimates
 - Identified dynamic scene objects as a major source of Visual Odometry drift
 
-## 2026-07-23
+## 2026-07-24
 
 ### Triangulation
 
 - Implemented `TriangulationProcessor` for estimating the 3D position of the matched visual features
 - Added depth validation to reject points with invalid or non-positive depth
 - Successfully reconstructed sparse 3D feature points from matched observations across two frames
+
+## 2026-07-27
+
+- Add initial PnP Processor setup
 
 ## 2026-08-05
 
@@ -146,12 +150,18 @@
 
 ### 3D Mapping
 
-- Added `MapPoint` structure storing 3D position and ORB descriptor.
-- Extended `Map3D` to maintain a persistent sparse point cloud.
+- Added `MapPoint` structure storing 3D position and ORB descriptor
+- Extended `Map3D` to maintain a persistent sparse point cloud
 
 ### Architecture
 
-- Fixed descriptor lifetime bug between `MotionEstimationProcessor` and `TriangulationProcessor`.
-- Introduced frozen snapshots (`matchedPreviousKeypoints`, `matchedPreviousDescriptors`) before `advanceFrame()`.
-- Prevented frame-state mismatches between feature matches and descriptor storage.
-- Clarified ownership of frame-dependent data across pipeline stages.
+- Fixed descriptor lifetime bug between `MotionEstimationProcessor` and `TriangulationProcessor`
+- Introduced frozen snapshots (`matchedPreviousKeypoints`, `matchedPreviousDescriptors`) before `advanceFrame()`
+- Prevented frame-state mismatches between feature matches and descriptor storage
+- Clarified ownership of frame-dependent data across pipeline stages
+
+## 2026-08-10
+
+- Implemented 3D <-> 2D matcher via `Map3D::matchDescriptors`
+- Added detailed comments to each processor
+- Repalced `solvePnP` with `solvePnPRansac` to automatically reject incorrect correspondences

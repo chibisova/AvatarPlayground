@@ -3,6 +3,11 @@
 #include <opencv2/core.hpp>
 
 // Estimate how camera moves over time
+/* 
+    This class maintains the global pose of the camera and visualizes its trajectory.
+    It updates the global pose based on the rotation (R) and translation (t) matrices provided.
+    The trajectory is drawn on a 2D image, where the camera's movement is represented as a path.
+*/
 namespace vision
 {
     class VisualOdometry

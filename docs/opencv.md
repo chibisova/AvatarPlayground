@@ -296,3 +296,45 @@ Example:
 
 ```cpp
 cv::recoverPose(E, points1, points2, K, R, t);
+
+---
+
+## Camera Pose Estimation
+
+### cv::findEssentialMat()
+
+Computes the Essential Matrix from matched feature correspondences.
+
+Inputs:
+- Previous frame points
+- Current frame points
+- Camera intrinsic matrix
+
+Typically used with RANSAC to reject outlier matches.
+
+---
+
+### cv::recoverPose()
+
+Recovers the relative camera rotation (R) and translation (t) from the Essential Matrix.
+
+Outputs:
+- Rotation matrix
+- Translation vector
+
+---
+
+### cv::solvePnPRansac()
+
+Estimates the camera pose from known 3D world points and their 2D image projections.
+
+Inputs:
+- 3D object points
+- 2D image points
+- Camera intrinsics
+
+Outputs:
+- rvec
+- tvec
+
+Uses RANSAC to reject incorrect correspondences.

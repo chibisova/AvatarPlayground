@@ -2,6 +2,7 @@
 
 #include <opencv2/core/mat.hpp>
 
+// Interface for image processing classes
 namespace vision
 {
     class IImageProcessor

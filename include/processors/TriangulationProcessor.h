@@ -8,6 +8,8 @@
 namespace vision
 {
     // Estimate the 3D position of the matched visual features
+    // Input: R, t, previousKeypoints, currentKeypoints, previousDescriptors, goodMatches
+    // Output: points3D (cv::Mat of 3D points), vector<MapPoint> (3D points with descriptors)
     class TriangulationProcessor
     {
     private:

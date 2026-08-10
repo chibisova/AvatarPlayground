@@ -5,7 +5,7 @@
 
 namespace vision
 {
-    // Estimate Camera motion between frames
+    // Estimate Camera motion between frames (E, R, t)
     class MotionEstimationProcessor : public IImageProcessor    // Inherits from IImageProcessor
     {
         private:

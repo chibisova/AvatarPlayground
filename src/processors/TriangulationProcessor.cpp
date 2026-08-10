@@ -95,7 +95,7 @@ namespace vision
             << previousPoints.size()
             << '\n';
 
-        // Convert homogeneous coordinates to 3D
+        // Convert homogeneous coordinates to 3D by devision by W
         points3D = cv::Mat::zeros(
             points4D.cols,
             3,
