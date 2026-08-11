@@ -46,6 +46,7 @@ target_link_libraries(SpatialAvatarPlayground PRIVATE ${OpenCV_LIBS})
 add_executable(PnPTest
     src/tests/PnPTest.cpp
     src/processors/PnPProcessor.cpp
+    src/Map3D.cpp
 )
 target_link_libraries(PnPTest PRIVATE ${OpenCV_LIBS})
 

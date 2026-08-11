@@ -23,7 +23,7 @@ namespace vision
         mapPoints.clear();
     }
 
-    std::vector<cv::DMatch> Map3D::matchDescriptors(const cv::Mat& currentDescriptors)
+    std::vector<cv::DMatch> Map3D::matchDescriptors(const cv::Mat& currentDescriptors) const
     {
         std::vector<cv::DMatch> matches;
 

@@ -165,3 +165,11 @@
 - Implemented 3D <-> 2D matcher via `Map3D::matchDescriptors`
 - Added detailed comments to each processor
 - Repalced `solvePnP` with `solvePnPRansac` to automatically reject incorrect correspondences
+
+## 2026-08-11
+
+- Refactored `PnPProcessor` into a full processing stage following the project architecture.
+- Added descriptor matching between the current frame and `Map3D`.
+- Built 3D–2D correspondences from matched map landmarks.
+- Integrated `cv::solvePnPRansac()` for robust camera localization.
+- Successfully estimated absolute camera's absolute pose (`rvec`, `tvec`) from the reconstructed sparse map.

@@ -14,5 +14,8 @@ namespace vision
     {
         cv::Point3f position;
         cv::Mat descriptor;
+        int observations = 1;
+        int lastSeenFrame = 0;
+        bool isBad = false;
     };
 }

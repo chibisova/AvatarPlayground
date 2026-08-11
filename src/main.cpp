@@ -12,7 +12,7 @@
 #include "processors/TriangulationProcessor.h"
 #include "Map3D.h"
 #include "MapPoint.h"
-
+#include "processors/PnPProcessor.h"
 
 int main() {
 
@@ -24,7 +24,11 @@ int main() {
     vision::VisualOdometry visualOdometry;
     vision::TriangulationProcessor triangulationProcessor;
 
+    vision::PnPProcessor pnpProcessor;
+
     vision::Map3D map;
+
+    pnpProcessor.setMap(&map);
 
     // Open the default camera
     cv::VideoCapture cam(Config::CAMERA_INDEX);
@@ -93,6 +97,21 @@ int main() {
                 );
 
                 map.addPoints(newPoints);
+
+                pnpProcessor.process(frame);
+
+                if (pnpProcessor.hasValidPose())
+                {
+                    std::cout << "PnP succeeded\n";
+
+                    std::cout << "rvec:\n"
+                            << pnpProcessor.getRotationVector()
+                            << '\n';
+
+                    std::cout << "tvec:\n"
+                            << pnpProcessor.getTranslationVector()
+                            << '\n';
+                }
 
                 std::cout << "New points: "
                         << newPoints.size() << std::endl;

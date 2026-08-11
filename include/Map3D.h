@@ -28,6 +28,7 @@ namespace vision
         void clear();
 
         // Function to match descriptors of current frame with the map's descriptors
-        std::vector<cv::DMatch> matchDescriptors(const cv::Mat& currentDescriptors);
+        std::vector<cv::DMatch> matchDescriptors(const cv::Mat& currentDescriptors) const;
+
     };
 }

@@ -876,6 +876,8 @@ Visual Odometry → estimates relative motion
 Mapping → builds the world representation
 PnP → estimates absolute camera pose within that world
 
+Unlike Visual Odometry, which estimates motion between consecutive frames, PnP localizes the camera within the reconstructed 3D world.
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Visual Odometry
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
