@@ -1,16 +1,36 @@
 #include "Map3D.h"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/features2d.hpp>
+#include "Config.h"
 
 namespace vision 
 {
     void Map3D::addPoints(const std::vector<MapPoint>& points)
     {
-        mapPoints.insert(
-            mapPoints.end(),
-            points.begin(),
-            points.end()
-        );
+        // check descriptores 
+        for (const auto& point : points) 
+        {
+            bool isDuplicate = false;
+
+            for (const auto& existingPoint : mapPoints)
+            { 
+                int distance = cv::norm(
+                    point.descriptor,
+                    existingPoint.descriptor,
+                    cv::NORM_HAMMING
+                );
+
+                if (distance < Config::DESCRIPTOR_DISTANCE_THRESHOLD) 
+                {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+            if (!isDuplicate) 
+            {
+                mapPoints.push_back(point);
+            }
+        }
     }
 
     const std::vector<MapPoint>& Map3D::getPoints() const
