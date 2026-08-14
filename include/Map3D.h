@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "MapPoint.h"
+#include <string>
 
 // Class to manage a 3D map of points
 /* 
@@ -19,6 +20,10 @@ namespace vision
         // List of 3D points in the map
         std::vector<MapPoint> mapPoints;
 
+        int currentFrame = 0;
+
+        std::vector<cv::Point3f> cameraPositions;
+
     public:
         // Add new 3D points to the map
         void addPoints(const std::vector<MapPoint>& points);
@@ -30,5 +35,14 @@ namespace vision
         // Function to match descriptors of current frame with the map's descriptors
         std::vector<cv::DMatch> matchDescriptors(const cv::Mat& currentDescriptors) const;
 
+        // Update the map with new landmarks, replacing existing ones if necessary
+        void updateLandmarks(const std::vector<MapPoint>& points);
+
+        // Save the 3D map to a PLY file
+        void savePLY(const std::string& filename, int minObservations) const;
+
+        void addCameraPosition(const cv::Point3f& position);
+
+        void saveCameraTrajectoryPLY(const std::string& filename) const;
     };
 }

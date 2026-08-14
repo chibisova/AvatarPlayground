@@ -96,38 +96,48 @@ int main() {
                     goodMatches
                 );
 
-                map.addPoints(newPoints);
+                map.updateLandmarks(newPoints);
 
                 pnpProcessor.process(frame);
 
                 if (pnpProcessor.hasValidPose())
                 {
-                    std::cout << "PnP succeeded\n";
+                    const cv::Mat& rvec = pnpProcessor.getRotationVector();
+                    const cv::Mat& tvec = pnpProcessor.getTranslationVector();
 
-                    std::cout << "rvec:\n"
-                            << pnpProcessor.getRotationVector()
-                            << '\n';
+                    cv::Mat R;
+                    cv::Rodrigues(rvec, R);
 
-                    std::cout << "tvec:\n"
-                            << pnpProcessor.getTranslationVector()
-                            << '\n';
+                    cv::Mat cameraPosition = -R.t() * tvec;
+
+                    map.addCameraPosition(
+                        cv::Point3f(
+                            static_cast<float>(cameraPosition.at<double>(0)),
+                            static_cast<float>(cameraPosition.at<double>(1)),
+                            static_cast<float>(cameraPosition.at<double>(2))
+                        )
+                    );
                 }
 
-                std::cout << "New points: "
-                        << newPoints.size() << std::endl;
-
                 std::cout << "Map size: "
-                        << map.getPoints().size() << std::endl;
-                
-                std::cout << "Triangulated points: "
-                        << triangulationProcessor
-                                .getPoints3D()
-                                .rows
-                        << std::endl;
+                << map.getPoints().size()
+                << '\n';
+
+                if (!map.getPoints().empty())
+                {
+                    std::cout << "First landmark observations: "
+                            << map.getPoints()[0].observations
+                            << '\n';
+                }
             
                 cv::imshow("Trajectory", visualOdometry.getTrajectory());
             }
         }
+
+        // Save the 3D map to a PLY file
+        map.savePLY("map_all.ply", 1);
+        map.savePLY("map_persistent.ply", 2);
+        map.saveCameraTrajectoryPLY("camera_trajectory.ply");
 
         // Display text on the frame
         drawHUD(processedFrame, fps, processor->name());

@@ -181,3 +181,12 @@
 - Added positive-depth filtering for triangulated points
 - Added reprojection-error filtering to reject geometrically inconsistent 3D points
 - Verified that filtered triangulated points continue to support successful PnP localization
+
+## 2026-08-14
+
+- Added persistent landmark management using descriptor association.
+- Added landmark observation tracking and last-seen frame information.
+- Added sparse 3D map export to PLY for visualization.
+- Added camera trajectory recording and PLY export.
+- Verified the reconstructed map and camera trajectory in Blender.
+- Completed the classical visual geometry backbone.
