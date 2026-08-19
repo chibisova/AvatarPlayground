@@ -68,3 +68,8 @@ Testing/
 # ==========================
 screenshots/
 recordings/
+
+# ==========================
+# TUM RGB-D benchmark dataset
+# ==========================
+datasets/

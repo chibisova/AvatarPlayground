@@ -48,10 +48,25 @@ add_executable(PnPTest
     src/processors/PnPProcessor.cpp
     src/Map3D.cpp
 )
+
 target_link_libraries(PnPTest PRIVATE ${OpenCV_LIBS})
 
 target_include_directories(PnPTest PRIVATE
     ${OpenCV_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/include
 
+)
+
+add_executable(TUMTest
+    src/tests/TUMTest.cpp
+    src/processors/MotionEstimationProcessor.cpp
+)
+
+target_link_libraries(TUMTest PRIVATE
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(TUMTest PRIVATE
+    ${OpenCV_INCLUDE_DIRS}
+    ${PROJECT_SOURCE_DIR}/include
 )

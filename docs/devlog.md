@@ -190,3 +190,9 @@
 - Added camera trajectory recording and PLY export.
 - Verified the reconstructed map and camera trajectory in Blender.
 - Completed the classical visual geometry backbone.
+
+## 2026-08-19
+
+- Added a TUM RGB-D VO test using the fr1/xyz sequence
+- Validated the existing ORB → feature matching → Essential Matrix → recoverPose() pipeline against ground-truth motion
+- Identified monocular VO translation scale ambiguity and separated visualization scale from metric scale

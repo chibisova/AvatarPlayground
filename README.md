@@ -8,34 +8,69 @@ The long-term objective is to bridge computer vision, computer graphics, machine
 
 ---
 
-# Current Capabilities
 
-## Image Processing
+# Project Status
 
-- Grayscale
-- Gaussian Blur
-- Thresholding
-- Canny Edge Detection
+## Phase 1 — Spatial Geometry: Complete
 
-## Feature Detection
+Implemented a modular monocular visual-geometry pipeline covering
+feature tracking, relative camera motion estimation, sparse 3D
+reconstruction, persistent landmark management, and camera
+localization.
 
-- Harris Corner Detector
-- Shi-Tomasi Corner Detector
-- ORB (Oriented FAST and Rotated BRIEF)
+The reconstructed sparse map and camera trajectory can be exported
+to PLY and inspected in Blender.
 
-## Motion Tracking
+### Motion Estimation
 
-- Lucas–Kanade Optical Flow
+- Essential Matrix Estimation
+- RANSAC-based Outlier Rejection
+- Relative Camera Pose Recovery
+- Visual Odometry
 
-## Feature Matching
+### 3D Reconstruction
 
-- Brute Force Matcher (Hamming Distance)
-- K-Nearest Neighbors (KNN)
-- Lowe's Ratio Test
-- RANSAC-based Homography Estimation
+- Feature-based Triangulation
+- Sparse 3D Map
+- Persistent Landmark Association
+- Reprojection Error Validation
+- PnP + RANSAC Camera Localization
+- Camera Trajectory Estimation
+- PLY Map Export
+- Blender-based 3D Visualization
+
+## Phase 2 — Human Reconstruction: In Progress
+
+The next stage focuses on learning-based human mesh recovery using
+the ANNY parametric human body model.
 
 ---
 
+## Results
+
+### Sparse 3D Reconstruction
+
+### Monocular Spatial Reconstruction
+
+[ FIRST SCREENSHOT ]
+
+Sparse 3D landmarks reconstructed from monocular video,
+shown together with the estimated camera trajectory.
+
+### Persistent Landmark Map
+
+[ SECOND SCREENSHOT ]
+
+Only landmarks observed across multiple frames are shown,
+highlighting the persistent structure maintained by Map3D.
+
+### Camera Localization
+
+[ THIRD SCREENSHOT ]
+
+Estimated camera trajectory recovered through visual
+odometry and PnP-based localization.
+---
 # Architecture
 
 ```
@@ -44,17 +79,34 @@ Camera
    ▼
 ProcessorManager
    │
-   ├── GrayProcessor
-   ├── BlurProcessor
-   ├── ThresholdProcessor
-   ├── CannyProcessor
-   ├── HarrisProcessor
-   ├── ShiTomasiProcessor
-   ├── OpticalFlowProcessor
-   ├── ORBProcessor
-   ├── BFMatcherProcessor
-   ├── KNNMatcherProcessor
-   └── RANSACProcessor
+   ├── Image Processing
+   │    ├── GrayProcessor
+   │    ├── BlurProcessor
+   │    ├── ThresholdProcessor
+   │    └── CannyProcessor
+   │
+   ├── Feature Processing
+   │    ├── HarrisProcessor
+   │    ├── ShiTomasiProcessor
+   │    ├── ORBProcessor
+   │    └── OpticalFlowProcessor
+   │
+   ├── Feature Matching
+   │    ├── BFMatcherProcessor
+   │    └── KNNMatcherProcessor
+   │
+   └── Geometry
+        ├── RANSACProcessor
+        ├── MotionEstimationProcessor
+        ├── TriangulationProcessor
+        └── PnPProcessor
+
+              │
+              ▼
+           Map3D
+              │
+              ├── Persistent Landmarks
+              └── Camera Trajectory
 ```
 
 Each perception module implements a common processor interface, allowing algorithms to be developed, evaluated, and replaced independently.
@@ -65,61 +117,48 @@ Stateful modules (such as optical flow and feature matching) maintain persistent
 
 ---
 
-# Research Roadmap
+## Roadmap
 
-Avatar Playground is developed incrementally, with each stage building upon previous components.
+### Phase 1 — Spatial Geometry
+- [x] Camera capture
+- [x] OpenCV fundamentals
+- [x] Feature detection and matching
+- [x] Essential matrix + RANSAC
+- [x] Visual Odometry
+- [x] Triangulation
+- [x] Sparse 3D mapping
+- [x] PnP localization
+- [x] Persistent landmarks
+- [x] Camera trajectory
+- [x] 3D map visualization
 
-### Classical Computer Vision
+### Phase 2 — Human Reconstruction
+- [ ] Understand ANNY parameterization
+- [ ] Integrate ANNY parametric body model
+- [ ] Generate and visualize ANNY meshes
+- [ ] Build synthetic ANNY training data
+- [ ] Implement PyTorch HMR baseline
+- [ ] Regress pose and phenotype parameters
+- [ ] Add differentiable projection/rendering
+- [ ] Add 2D keypoint and silhouette supervision
+- [ ] Evaluate reconstruction on real images
 
-- [x] Image Processing
-- [x] Corner Detection
-- [x] Optical Flow
-- [x] Feature Detection (ORB)
-- [x] Feature Matching
-- [x] Homography Estimation (RANSAC)
-
-### Geometric Vision
-
-- [x] Essential Matrix Estimation
-- [ ] Camera Pose Estimation (PnP)
-- [ ] Epipolar Geometry
-- [ ] Visual Odometry
-- [ ] Visual-Inertial Odometry
-- [ ] Bundle Adjustment
-- [ ] SLAM Fundamentals
-
-### Human Perception
-
-- [ ] Face Detection
-- [ ] Facial Landmark Detection
-- [ ] Head Pose Estimation
-- [ ] Hand Tracking
-- [ ] Body Pose Estimation
-
-### Neural Perception
-
-- [ ] Learned Feature Matching (SuperPoint / LightGlue)
-- [ ] Monocular 3D Face Reconstruction
-- [ ] Neural Avatar Reconstruction
-- [ ] Generative Avatar Models
-- [ ] Expression Transfer
-- [ ] Motion Generation
-
-### Real-Time Avatar Systems
-
-- [ ] Unity Integration
-- [ ] Real-Time Avatar Animation
-- [ ] Sensor Fusion
-- [ ] Spatial Avatar Pipeline
+### Phase 3 — Spatial Avatar
+- [ ] Connect HMR with camera geometry
+- [ ] Recover human in world coordinates
+- [ ] Temporal human tracking
+- [ ] Unity avatar integration
+- [ ] Real-time spatial avatar prototype
 
 ---
 
 # Technologies
 
-- C++20
+- C++17
 - OpenCV 4.x
 - CMake
 - Visual Studio Code
+- Blender
 
 Future integrations may include:
 
@@ -154,21 +193,26 @@ Run:
 include/
 │
 ├── processors/
-├── core/
-├── utils/
-└── visualization/
+├── Map3D.h
+├── MapPoint.h
+├── VisualOdometry.h
+├── Config.h
+├── ProcessorManager.h
 
 src/
 ├── processors/
-├── core/
-└── visualization/
+├── Map3D.cpp
+├── VisualOdometry.cpp
+├── ProcessorManager.cpp
+├── HUD.cpp
+├── Input.cpp
+├── Timing.cpp
+├── main.cpp
+└── tests/
 
 assets/
 docs/
-
-main.cpp
-ProcessorManager.cpp
-Config.h
+└── papers/
 ```
 
 ---

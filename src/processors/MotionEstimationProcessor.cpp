@@ -211,6 +211,14 @@ namespace vision
             E = cv::findEssentialMat(previousPoints, currentPoints, K, cv::RANSAC, 0.999, 1.0, essentialMask);
             std::cout << "E size: " << E.rows << " x " << E.cols << '\n';
 
+            int essentialInliers = cv::countNonZero(essentialMask);
+
+            std::cout
+                << "Essential RANSAC inliers: "
+                << essentialInliers
+                << " / "
+                << previousPoints.size()
+                << '\n';
 
             if (E.empty()){
                 // Estimation failed 
@@ -249,11 +257,19 @@ namespace vision
 
             // Get Camera Rotation and Translation matrices
             // inliers - how many matches were geometrically consistent
-            int inliers = cv::recoverPose(E, previousPoints, currentPoints, K, relativeRotation, relativeTranslation); 
-            
+            int inliers = cv::recoverPose(E, previousPoints, currentPoints, K, relativeRotation, relativeTranslation, essentialMask); 
             
             // Check whether the pose recovery was successful
-            double ratio = static_cast<double>(inliers) / goodMatches.size();
+            double ratio = static_cast<double>(inliers) / previousPoints.size();
+
+            std::cout
+            << "Pose inliers: "
+            << inliers
+            << " / "
+            << goodMatches.size()
+            << " ("
+            << ratio
+            << ")\n";
 
             if (ratio < 0.25)
             {
