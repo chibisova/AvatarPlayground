@@ -71,3 +71,47 @@ target_include_directories(TUMTest PRIVATE
     ${OpenCV_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/include
 )
+
+
+add_executable(SpatialDemo
+
+    src/tests/SpatialDemo.cpp
+
+    src/CameraCalibration.cpp
+    src/Map3D.cpp
+    src/ProcessorManager.cpp
+
+    src/processors/BFMatcherProcessor.cpp
+    src/processors/BlurProcessor.cpp
+    src/processors/CannyProcessor.cpp
+    src/processors/GrayProcessor.cpp
+    src/processors/HarrisProcessor.cpp
+    src/processors/KNNMatcherProcessor.cpp
+    src/processors/MotionEstimationProcessor.cpp
+    src/processors/OpticalFlowProcessor.cpp
+    src/processors/ORBProcessor.cpp
+    src/processors/OriginalProcessor.cpp
+    src/processors/PnPProcessor.cpp
+    src/processors/RANSACProcessor.cpp
+    src/processors/ShiTomasiProcessor.cpp
+    src/processors/ThresholdProcessor.cpp
+    src/processors/TriangulationProcessor.cpp
+
+    src/VisualOdometry.cpp
+
+    src/visualization/SpatialVisualizer.cpp
+)
+
+target_link_libraries(SpatialDemo PRIVATE
+
+    ${OpenCV_LIBS}
+
+)
+
+target_include_directories(SpatialDemo PRIVATE
+
+    ${OpenCV_INCLUDE_DIRS}
+
+    ${PROJECT_SOURCE_DIR}/include
+
+)

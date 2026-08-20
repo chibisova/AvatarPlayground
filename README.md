@@ -19,14 +19,18 @@ reconstruction, persistent landmark management, and camera
 localization.
 
 The reconstructed sparse map and camera trajectory can be exported
-to PLY and inspected in Blender.
+to PLY and inspected in Blender. 
+(Updated) The system also provides an interactive 3D visualization 
+using OpenCV Viz and records numerical camera trajectories for 
+later evaluation.
 
 ### Motion Estimation
 
 - Essential Matrix Estimation
 - RANSAC-based Outlier Rejection
 - Relative Camera Pose Recovery
-- Visual Odometry
+- Monocular Visual Odometry
+- TUM RGB-D validation
 
 ### 3D Reconstruction
 
@@ -38,6 +42,20 @@ to PLY and inspected in Blender.
 - Camera Trajectory Estimation
 - PLY Map Export
 - Blender-based 3D Visualization
+- Real-time 3D spatial visualization
+- Camera trajectory logging
+
+### Current Limitations
+
+- Monocular translation has inherent scale ambiguity.
+- Visual odometry currently assumes a predominantly static scene.
+- Dynamic objects can produce incorrect camera-motion estimates.
+- The current system does not yet perform global optimization or
+  loop closure.
+
+These limitations are intentionally preserved as part of the
+current experimental baseline and will be addressed in later
+spatial-understanding stages.
 
 ## Phase 2 — Human Reconstruction: In Progress
 
@@ -48,28 +66,27 @@ the ANNY parametric human body model.
 
 ## Results
 
+### Spatial Mapping Demo
+
+![Spatial mapping and camera trajectory](assets/demo/spatial_mapping_demo.gif)
+
+Monocular visual odometry reconstructs a sparse 3D scene while estimating
+the camera trajectory from prerecorded video.
+
 ### Sparse 3D Reconstruction
 
-### Monocular Spatial Reconstruction
+<img src="docs/images/blender_sparse_map.png" width="700">
 
-[ FIRST SCREENSHOT ]
-
-Sparse 3D landmarks reconstructed from monocular video,
-shown together with the estimated camera trajectory.
+Sparse 3D landmarks reconstructed from monocular video and exported
+to PLY for inspection in Blender.
 
 ### Persistent Landmark Map
 
-[ SECOND SCREENSHOT ]
+<img src="docs/images/persistent_landmarks.png" width="700">
 
-Only landmarks observed across multiple frames are shown,
-highlighting the persistent structure maintained by Map3D.
+Landmarks observed across multiple frames are retained as persistent
+spatial structure.
 
-### Camera Localization
-
-[ THIRD SCREENSHOT ]
-
-Estimated camera trajectory recovered through visual
-odometry and PnP-based localization.
 ---
 # Architecture
 
@@ -107,7 +124,17 @@ ProcessorManager
               │
               ├── Persistent Landmarks
               └── Camera Trajectory
+                       │
+              ┌────────┴────────┐
+              ▼                 ▼
+         PLY Export       SpatialVisualizer
+                              │
+                              ▼
+                         OpenCV Viz
 ```
+`SpatialVisualizer` provides real-time visualization of the sparse
+map, camera trajectory, current camera pose, and coordinate system
+without coupling visualization logic to the perception processors.
 
 Each perception module implements a common processor interface, allowing algorithms to be developed, evaluated, and replaced independently.
 
@@ -130,13 +157,19 @@ Stateful modules (such as optical flow and feature matching) maintain persistent
 - [x] PnP localization
 - [x] Persistent landmarks
 - [x] Camera trajectory
-- [x] 3D map visualization
+- [x] PLY map export
+- [x] Blender visualization
+- [x] Real-time 3D spatial visualization
+- [x] TUM RGB-D validation
+- [x] Experiment logging
+- [x] Numerical trajectory export
 
 ### Phase 2 — Human Reconstruction
 - [ ] Understand ANNY parameterization
 - [ ] Integrate ANNY parametric body model
 - [ ] Generate and visualize ANNY meshes
-- [ ] Build synthetic ANNY training data
+- [ ] Establish image-to-ANNY fitting baseline
+- [ ] Investigate Multi-HMR as an initialization method
 - [ ] Implement PyTorch HMR baseline
 - [ ] Regress pose and phenotype parameters
 - [ ] Add differentiable projection/rendering
@@ -156,6 +189,7 @@ Stateful modules (such as optical flow and feature matching) maintain persistent
 
 - C++17
 - OpenCV 4.x
+- OpenCV Viz
 - CMake
 - Visual Studio Code
 - Blender
@@ -179,10 +213,29 @@ cmake ..
 cmake --build .
 ```
 
-Run:
+Run the main application:
 
 ```bash
 ./AvatarPlayground
+```
+
+Run the spatial mapping demo after placing an .mp4 video in assets/demo/:
+
+```bash
+./SpatialDemo
+```
+
+Generate the demo GIF:
+
+```bash
+python3 tools/convert2gif.py
+```
+
+Run tests:
+
+```bash
+./PnPTest
+./TUMTest
 ```
 
 ---
@@ -193,6 +246,8 @@ Run:
 include/
 │
 ├── processors/
+├── visualization/
+│   └── SpatialVisualizer.h
 ├── Map3D.h
 ├── MapPoint.h
 ├── VisualOdometry.h
@@ -201,6 +256,8 @@ include/
 
 src/
 ├── processors/
+├── visualization/
+│   └── SpatialVisualizer.cpp
 ├── Map3D.cpp
 ├── VisualOdometry.cpp
 ├── ProcessorManager.cpp
@@ -210,9 +267,17 @@ src/
 ├── main.cpp
 └── tests/
 
+datasets/
+└── tum/
+
 assets/
 docs/
 └── papers/
+
+tools/
+└── convert2gif.py
+
+logs/
 ```
 
 ---

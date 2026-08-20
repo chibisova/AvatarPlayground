@@ -196,3 +196,22 @@
 - Added a TUM RGB-D VO test using the fr1/xyz sequence
 - Validated the existing ORB → feature matching → Essential Matrix → recoverPose() pipeline against ground-truth motion
 - Identified monocular VO translation scale ambiguity and separated visualization scale from metric scale
+
+## 2026-08-20
+
+### Spatial Visualization
+
+- Added real-time 3D spatial visualization using OpenCV Viz
+- Visualized sparse map landmarks, camera trajectory, current camera pose, and coordinate system
+- Validated camera trajectory qualitatively in a static scene with deliberate camera motion
+- Tested stationary camera with a moving foreground object and observed dynamic-object-induced camera motion
+- Added timestamped experiment logs for reproducible VO runs
+- Added numerical camera trajectory export for later trajectory evaluation
+- Established a visual and quantitative baseline for the current monocular VO pipeline
+
+### Demo & Export
+
+- Verified reconstruction on a 16.5-second prerecorded monocular video
+- Processed all 397 video frames at 24 FPS
+- Completed the classical monocular visual-geometry backbone
+- Added python frames to gif convertor

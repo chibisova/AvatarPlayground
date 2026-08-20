@@ -23,13 +23,24 @@ namespace vision
 
         void show();
 
+        void saveScreenshot(const std::string& filename);
+        
+        void saveOverviewScreenshot(const std::string& filename);
+        
         bool wasStopped() const;
 
     private:
+        void fitView();
+    
         cv::viz::Viz3d window;
-
-        std::vector<cv::Point3f> cameraTrajectory;
-
+        cv::viz::Viz3d overviewWindow;
+    
+        cv::Point3f sceneCenter;
+        float sceneRadius;
+        float lastFittedRadius;
+    
         bool initialized;
+    
+        std::vector<cv::Point3f> cameraTrajectory;
     };
 }

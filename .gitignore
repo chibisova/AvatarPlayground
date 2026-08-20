@@ -76,7 +76,9 @@ datasets/
 
 
 # ==========================
-# log files
+# log and media files
 # ==========================
 
 logs/
+assets/demo/trajectory_frames/
+assets/demo/*.mp4
