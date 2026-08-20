@@ -12,6 +12,11 @@ namespace vision
         return trajectory;
     }
 
+    const cv::Mat& vision::VisualOdometry::getGlobalPose() const
+    {
+        return globalPose;
+    }
+    
     void VisualOdometry::update(const cv::Mat& R,
                                 const cv::Mat& t)
     {

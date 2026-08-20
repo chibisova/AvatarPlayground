@@ -33,7 +33,8 @@ add_executable(SpatialAvatarPlayground
     src/processors/ThresholdProcessor.cpp
     src/processors/TriangulationProcessor.cpp
     src/VisualOdometry.cpp
-    
+    src/visualization/SpatialVisualizer.cpp
+    src/Logger.cpp
 )
 
 target_include_directories(SpatialAvatarPlayground PRIVATE 

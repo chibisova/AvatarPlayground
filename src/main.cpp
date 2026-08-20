@@ -1,6 +1,11 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <filesystem>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+
 #include "Config.h"
 #include "HUD.h"
 #include "Input.h"
@@ -13,9 +18,61 @@
 #include "Map3D.h"
 #include "MapPoint.h"
 #include "processors/PnPProcessor.h"
+#include "visualization/SpatialVisualizer.h"
+#include "Logger.h"
+
 
 int main() {
 
+    // Create the logs directory if it doesn't exist
+    std::filesystem::create_directories("./logs");
+
+    const auto now =
+        std::chrono::system_clock::now();
+
+    const std::time_t nowTime =
+        std::chrono::system_clock::to_time_t(now);
+
+    std::tm localTime{};
+
+    #ifdef __APPLE__
+    localtime_r(&nowTime, &localTime);
+    #else
+    localtime_s(&localTime, &nowTime);
+    #endif
+
+    std::ostringstream filename;
+
+    filename
+        << "./logs/run_"
+        << std::put_time(
+            &localTime,
+            "%Y-%m-%d_%H-%M-%S"
+        )
+        << ".txt";
+
+    vision::Logger logger(filename.str());
+
+    logger.log("===== Spatial Avatar Playground =====");
+    logger.log("Run started.");
+
+    std::ostringstream trajectoryFilename;
+
+    trajectoryFilename
+        << "./logs/trajectory_"
+        << std::put_time(
+            &localTime,
+            "%Y-%m-%d_%H-%M-%S"
+        )
+        << ".txt";
+
+    std::ofstream trajectoryFile(
+        trajectoryFilename.str()
+    );
+
+    trajectoryFile
+        << "# frame x y z\n";
+    
     // Defaults
     int numOfScr = 1; // Counter for screenshots
     ProcessingMode currentMode = ProcessingMode::Original; // Default processing mode
@@ -27,6 +84,9 @@ int main() {
     vision::PnPProcessor pnpProcessor;
 
     vision::Map3D map;
+
+    // Initialize the spatial visualizer
+    vision::SpatialVisualizer spatialVisualizer;
 
     pnpProcessor.setMap(&map);
 
@@ -46,7 +106,8 @@ int main() {
     // Initialize previous time for FPS calculation
     auto previousTime = std::chrono::steady_clock::now();
     double fps = 0.0;
-
+    int frameNumber = 0;
+    
     while (true) {
 
         // Capture a frame
@@ -86,6 +147,39 @@ int main() {
                 // Visual Odometry
                 visualOdometry.update(R, t);
 
+                // Log the camera position to the trajectory file
+                const cv::Mat& globalPose =
+                    visualOdometry.getGlobalPose();
+
+                const double x =
+                    globalPose.at<double>(0, 3);
+
+                const double y =
+                    globalPose.at<double>(1, 3);
+
+                const double z =
+                    globalPose.at<double>(2, 3);
+
+                trajectoryFile
+                    << frameNumber << ' '
+                    << x << ' '
+                    << y << ' '
+                    << z << '\n';
+
+                // Log the camera position to human readable log
+
+                std::ostringstream poseLog;
+
+                poseLog
+                    << "Frame "
+                    << frameNumber
+                    << " | Camera position: "
+                    << x << ", "
+                    << y << ", "
+                    << z;
+
+                logger.log(poseLog.str());
+
                 // Triangulation
                 std::vector<vision::MapPoint> newPoints = triangulationProcessor.triangulate(
                     R,
@@ -97,6 +191,18 @@ int main() {
                 );
 
                 map.updateLandmarks(newPoints);
+
+                // Update the spatial visualizer with the current map and camera pose
+                spatialVisualizer.updateMap(map);
+                spatialVisualizer.updateCameraPose(
+                    visualOdometry.getGlobalPose()
+                );
+                spatialVisualizer.show();
+
+                if (spatialVisualizer.wasStopped())
+                {
+                    break;
+                }
 
                 pnpProcessor.process(frame);
 
@@ -120,8 +226,20 @@ int main() {
                 }
 
                 std::cout << "Map size: "
-                << map.getPoints().size()
-                << '\n';
+                    << map.getPoints().size()
+                    << '\n';
+
+                // Log the map size and first landmark observations
+                
+                std::ostringstream mapLog;
+
+                mapLog
+                    << "Frame "
+                    << frameNumber
+                    << " | Map size: "
+                    << map.getPoints().size();
+
+                logger.log(mapLog.str());
 
                 if (!map.getPoints().empty())
                 {
@@ -153,7 +271,23 @@ int main() {
 
         // Calculate FPS
         fps = calculateFPS(previousTime);
+        frameNumber++;
     }
+    trajectoryFile.close();
+
+    logger.log("");
+    logger.log("===== RUN FINISHED =====");
+
+    std::ostringstream finalLog;
+
+    finalLog
+        << "Total frames processed: "
+        << frameNumber
+        << "\n"
+        << "Final map size: "
+        << map.getPoints().size();
+
+    logger.log(finalLog.str());
 
     // Release the camera and destroy all OpenCV windows
     cam.release();

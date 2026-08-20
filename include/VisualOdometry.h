@@ -27,5 +27,7 @@ namespace vision
                         const cv::Mat& t);
 
             const cv::Mat& getTrajectory() const;
+
+            const cv::Mat& getGlobalPose() const;
     };
 }

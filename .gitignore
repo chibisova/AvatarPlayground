@@ -73,3 +73,10 @@ recordings/
 # TUM RGB-D benchmark dataset
 # ==========================
 datasets/
+
+
+# ==========================
+# log files
+# ==========================
+
+logs/
