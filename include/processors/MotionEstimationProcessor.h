@@ -30,6 +30,11 @@ namespace vision
             std::vector<cv::Point2f> previousPoints;
             std::vector<cv::Point2f> currentPoints;
 
+            int candidatePointCount = 0;
+            int essentialInlierCount = 0;
+            int poseInlierCount = 0;
+            double medianParallaxPixels = 0.0;
+
             bool poseValid = false;
         public:
             cv::Mat process(const cv::Mat& frame) override;
@@ -56,5 +61,10 @@ namespace vision
             void advanceFrame(const cv::Mat& frame);
 
             bool hasValidPose() const;
+
+            int getCandidatePointCount() const;
+            int getEssentialInlierCount() const;
+            int getPoseInlierCount() const;
+            double getMedianParallaxPixels() const;
     }; 
 }

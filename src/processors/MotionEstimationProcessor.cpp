@@ -7,6 +7,41 @@
 
 namespace vision
 {
+    namespace
+    {
+        double calculateMedianParallax(
+            const std::vector<cv::Point2f>& previousPoints,
+            const std::vector<cv::Point2f>& currentPoints
+        )
+        {
+            if (previousPoints.empty() ||
+                previousPoints.size() != currentPoints.size())
+            {
+                return 0.0;
+            }
+
+            std::vector<double> parallaxes;
+            parallaxes.reserve(previousPoints.size());
+
+            for (size_t i = 0; i < previousPoints.size(); ++i)
+            {
+                parallaxes.push_back(
+                    cv::norm(previousPoints[i] - currentPoints[i])
+                );
+            }
+
+            const size_t middle = parallaxes.size() / 2;
+
+            std::nth_element(
+                parallaxes.begin(),
+                parallaxes.begin() + middle,
+                parallaxes.end()
+            );
+
+            return parallaxes[middle];
+        }
+    }
+
     const cv::Mat& MotionEstimationProcessor::getRotation() const
     {
         return relativeRotation;
@@ -30,6 +65,26 @@ namespace vision
     bool MotionEstimationProcessor::hasValidPose() const
     {
         return poseValid;
+    }
+
+    int MotionEstimationProcessor::getCandidatePointCount() const
+    {
+        return candidatePointCount;
+    }
+
+    int MotionEstimationProcessor::getEssentialInlierCount() const
+    {
+        return essentialInlierCount;
+    }
+
+    int MotionEstimationProcessor::getPoseInlierCount() const
+    {
+        return poseInlierCount;
+    }
+
+    double MotionEstimationProcessor::getMedianParallaxPixels() const
+    {
+        return medianParallaxPixels;
     }
 
     const std::vector<cv::DMatch>& MotionEstimationProcessor::getGoodMatches() const
@@ -79,6 +134,10 @@ namespace vision
         cv::Mat essentialMask;
         
         poseValid = false;
+        candidatePointCount = 0;
+        essentialInlierCount = 0;
+        poseInlierCount = 0;
+        medianParallaxPixels = 0.0;
 
         cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
@@ -139,8 +198,6 @@ namespace vision
             {
                 output = frame.clone();
 
-                advanceFrame(frame);
-
                 poseValid = false;
                 
                 return output;
@@ -196,12 +253,16 @@ namespace vision
                 currentPoints.push_back(currentKeypoints[match.trainIdx].pt);
             }
 
+            candidatePointCount = static_cast<int>(previousPoints.size());
+            medianParallaxPixels = calculateMedianParallax(
+                previousPoints,
+                currentPoints
+            );
+
             // Compute Essential Matrix
             if (previousPoints.size() < 5) 
             {
                 output = frame.clone();
-
-                advanceFrame(frame);
 
                 poseValid = false;
 
@@ -211,11 +272,11 @@ namespace vision
             E = cv::findEssentialMat(previousPoints, currentPoints, K, cv::RANSAC, 0.999, 1.0, essentialMask);
             std::cout << "E size: " << E.rows << " x " << E.cols << '\n';
 
-            int essentialInliers = cv::countNonZero(essentialMask);
+            essentialInlierCount = cv::countNonZero(essentialMask);
 
             std::cout
                 << "Essential RANSAC inliers: "
-                << essentialInliers
+                << essentialInlierCount
                 << " / "
                 << previousPoints.size()
                 << '\n';
@@ -225,8 +286,6 @@ namespace vision
                 std::cout << "No E";
                 
                 output = frame.clone();
-
-                advanceFrame(frame);
 
                 poseValid = false;
 
@@ -250,14 +309,13 @@ namespace vision
 
                 poseValid = false;
 
-                advanceFrame(frame);
-
                 return frame.clone();
             }
 
             // Get Camera Rotation and Translation matrices
             // inliers - how many matches were geometrically consistent
             int inliers = cv::recoverPose(E, previousPoints, currentPoints, K, relativeRotation, relativeTranslation, essentialMask); 
+            poseInlierCount = inliers;
             
             // Check whether the pose recovery was successful
             double ratio = static_cast<double>(inliers) / previousPoints.size();
@@ -274,8 +332,6 @@ namespace vision
             if (ratio < 0.25)
             {
                 output = frame.clone();
-
-                advanceFrame(frame);
 
                 poseValid = false;
                 return output;
@@ -302,7 +358,14 @@ namespace vision
             poseValid = false;
         }
         
-        advanceFrame(frame);
+        // Keep the last accepted pose as the feature-matching anchor.  A
+        // rejected relative pose must not replace it: otherwise the next
+        // accepted transform would be composed onto an older world pose while
+        // being measured from a newer, unaccumulated frame.
+        if (poseValid || previousDescriptors.empty())
+        {
+            advanceFrame(frame);
+        }
 
         std::cout << "Leaving MotionEstimation\n";
         std::cout << previousDescriptors.rows << '\n';

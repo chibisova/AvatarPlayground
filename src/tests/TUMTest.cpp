@@ -7,6 +7,8 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <numeric>
+#include <limits>
 
 #include "Config.h"
 #include "processors/MotionEstimationProcessor.h"
@@ -35,6 +37,24 @@ struct TrajectorySample
     cv::Vec3d estimatedPosition;
     cv::Vec3d groundTruthPosition;
 };
+
+
+double rotationErrorDegrees(
+    const cv::Mat& estimatedRotation,
+    const cv::Mat& groundTruthRotation
+)
+{
+    const cv::Mat rotationError =
+        estimatedRotation * groundTruthRotation.t();
+
+    const double cosine = std::clamp(
+        (cv::trace(rotationError)[0] - 1.0) / 2.0,
+        -1.0,
+        1.0
+    );
+
+    return std::acos(cosine) * 180.0 / CV_PI;
+}
 
 
 bool loadRGBList(
@@ -293,6 +313,23 @@ int main()
 
 
     int successfulPoses = 0;
+    int evaluatedPairs = 0;
+    std::vector<double> rotationErrorsDegrees;
+    const TUMGroundTruth* previousGroundTruth = nullptr;
+    const TUMGroundTruth* anchorGroundTruth = nullptr;
+
+    std::ofstream trajectoryLog("logs/tum_trajectory.csv");
+
+    if (!trajectoryLog.is_open())
+    {
+        std::cerr << "Could not write: logs/tum_trajectory.csv\n";
+        return -1;
+    }
+
+    trajectoryLog
+        << "frame,timestamp,status,estimated_x,estimated_y,estimated_z,"
+        << "ground_truth_x,ground_truth_y,ground_truth_z,"
+        << "pose_inliers,median_parallax_px,rotation_error_deg\n";
 
 
 
@@ -367,13 +404,39 @@ int main()
             undistortedFrame
         );
 
+        const bool poseValid = motionEstimation.hasValidPose();
+        cv::Vec3d estimatedPosition(
+            std::numeric_limits<double>::quiet_NaN(),
+            std::numeric_limits<double>::quiet_NaN(),
+            std::numeric_limits<double>::quiet_NaN()
+        );
+        double rotationError = std::numeric_limits<double>::quiet_NaN();
+
+        if (previousGroundTruth != nullptr)
+        {
+            ++evaluatedPairs;
+
+            std::cout
+                << "Pose diagnostics | "
+                << (poseValid ? "accepted" : "rejected")
+                << " | candidates: "
+                << motionEstimation.getCandidatePointCount()
+                << " | essential inliers: "
+                << motionEstimation.getEssentialInlierCount()
+                << " | pose inliers: "
+                << motionEstimation.getPoseInlierCount()
+                << " | median parallax (px): "
+                << motionEstimation.getMedianParallaxPixels()
+                << '\n';
+        }
+
 
         // -----------------------------------------------------
         // Check VO pose
         // -----------------------------------------------------
 
         if (
-            motionEstimation.hasValidPose()
+            poseValid
         )
         {
             successfulPoses++;
@@ -388,6 +451,25 @@ int main()
 
             const cv::Mat& t =
                 motionEstimation.getTranslation();
+
+            if (anchorGroundTruth != nullptr && gt != nullptr)
+            {
+                const cv::Mat groundTruthRelativeRotation =
+                    quaternionToRotation(gt->orientation).t() *
+                    quaternionToRotation(anchorGroundTruth->orientation);
+
+                rotationError = rotationErrorDegrees(
+                    R,
+                    groundTruthRelativeRotation
+                );
+
+                rotationErrorsDegrees.push_back(rotationError);
+
+                std::cout
+                    << "Ground-truth rotation error (deg): "
+                    << rotationError
+                    << '\n';
+            }
 
 
 
@@ -476,6 +558,8 @@ int main()
                         worldPose.at<double>(2, 3)
                     );
 
+                estimatedPosition = sample.estimatedPosition;
+
 
                 sample.groundTruthPosition =
                     gt->position;
@@ -502,6 +586,31 @@ int main()
             std::cout
                 << "Pose not available\n";
         }
+
+        if (previousGroundTruth != nullptr && gt != nullptr)
+        {
+            trajectoryLog
+                << i << ','
+                << frames[i].timestamp << ','
+                << (poseValid ? "accepted" : "rejected") << ','
+                << estimatedPosition[0] << ','
+                << estimatedPosition[1] << ','
+                << estimatedPosition[2] << ','
+                << gt->position[0] << ','
+                << gt->position[1] << ','
+                << gt->position[2] << ','
+                << motionEstimation.getPoseInlierCount() << ','
+                << motionEstimation.getMedianParallaxPixels() << ','
+                << rotationError
+                << '\n';
+        }
+
+        if (previousGroundTruth == nullptr || poseValid)
+        {
+            anchorGroundTruth = gt;
+        }
+
+        previousGroundTruth = gt;
     }
 
 
@@ -558,8 +667,34 @@ int main()
         << "\nSuccessful poses: "
         << successfulPoses
         << " / "
+        << evaluatedPairs
+        << " ("
+        << (evaluatedPairs == 0
+                ? 0.0
+                : 100.0 * successfulPoses / evaluatedPairs)
+        << "%)\n";
+
+    if (!rotationErrorsDegrees.empty())
+    {
+        const double totalRotationError = std::accumulate(
+            rotationErrorsDegrees.begin(),
+            rotationErrorsDegrees.end(),
+            0.0
+        );
+
+        std::cout
+            << "Mean accepted-pair rotation error (deg): "
+            << totalRotationError / rotationErrorsDegrees.size()
+            << '\n';
+    }
+
+    std::cout
+        << "Total RGB frames: "
         << frames.size()
         << '\n';
+
+    std::cout
+        << "Trajectory diagnostics: logs/tum_trajectory.csv\n";
 
 
     return 0;
