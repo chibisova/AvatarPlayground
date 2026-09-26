@@ -151,19 +151,19 @@ Stateful modules (such as optical flow and feature matching) maintain persistent
 - [x] Numerical trajectory export
 
 ### Phase 2 — Human Reconstruction
-- [ ] Understand ANNY parameterization
-- [ ] Integrate ANNY parametric body model
-- [ ] Generate and visualize ANNY meshes
-- [ ] Establish image-to-ANNY fitting baseline
-- [ ] Investigate Multi-HMR as an initialization method
-- [ ] Implement PyTorch HMR baseline
+- [x] Compare SMPL, ANNY, MHR 
+- [ ] Understand ~~ANNY~~ MHR parameterization
+- [ ] Integrate ~~ANNY~~ MHR parametric body model
+- [ ] Generate and visualize ~~ANNY~~ MHR meshes
+- [ ] Establish image-to-~~ANNY~~ MHR fitting baseline
+- [ ] Investigate ~~Multi-HMR~~ SAM3D as an initialization method
 - [ ] Regress pose and phenotype parameters
 - [ ] Add differentiable projection/rendering
 - [ ] Add 2D keypoint and silhouette supervision
 - [ ] Evaluate reconstruction on real images
 
 ### Phase 3 — Spatial Avatar
-- [ ] Connect HMR with camera geometry
+- [ ] Connect MHR with camera geometry
 - [ ] Recover human in world coordinates
 - [ ] Temporal human tracking
 - [ ] Unity avatar integration
