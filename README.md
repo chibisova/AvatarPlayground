@@ -73,20 +73,6 @@ the ANNY parametric human body model.
 Monocular visual odometry reconstructs a sparse 3D scene while estimating
 the camera trajectory from prerecorded video.
 
-### Sparse 3D Reconstruction
-
-<img src="docs/images/blender_sparse_map.png" width="700">
-
-Sparse 3D landmarks reconstructed from monocular video and exported
-to PLY for inspection in Blender.
-
-### Persistent Landmark Map
-
-<img src="docs/images/persistent_landmarks.png" width="700">
-
-Landmarks observed across multiple frames are retained as persistent
-spatial structure.
-
 ---
 # Architecture
 
