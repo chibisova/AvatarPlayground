@@ -16,8 +16,16 @@ namespace vision
             std::vector<cv::KeyPoint> previousKeypoints;
             cv::Mat previousDescriptors;
 
+            std::vector<cv::KeyPoint> matchedPreviousKeypoints;
+            std::vector<cv::KeyPoint> matchedCurrentKeypoints;
+            std::vector<cv::DMatch> lastGoodMatches;
+
         public:
             cv::Mat process(const cv::Mat& frame) override;
+
+            const std::vector<cv::KeyPoint>& getMatchedPreviousKeypoints() const;
+            const std::vector<cv::KeyPoint>& getMatchedCurrentKeypoints() const;
+            const std::vector<cv::DMatch>& getGoodMatches() const;
 
             const char* name() const override
             { 

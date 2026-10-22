@@ -72,6 +72,20 @@ target_include_directories(TUMTest PRIVATE
     ${PROJECT_SOURCE_DIR}/include
 )
 
+add_executable(TUMFeatureMatchingVisualization
+    src/tools/TUMFeatureMatchingVisualization.cpp
+    src/processors/KNNMatcherProcessor.cpp
+)
+
+target_link_libraries(TUMFeatureMatchingVisualization PRIVATE
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(TUMFeatureMatchingVisualization PRIVATE
+    ${OpenCV_INCLUDE_DIRS}
+    ${PROJECT_SOURCE_DIR}/include
+)
+
 
 add_executable(SpatialDemo
 

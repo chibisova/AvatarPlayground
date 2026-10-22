@@ -19,10 +19,13 @@ reconstruction, persistent landmark management, and camera
 localization.
 
 The reconstructed sparse map and camera trajectory can be exported
-to PLY and inspected in Blender. 
-(Updated) The system also provides an interactive 3D visualization 
-using OpenCV Viz and records numerical camera trajectories for 
-later evaluation.
+to PLY and inspected in Blender. The system also provides an
+interactive 3D visualization using OpenCV Viz and records numerical
+camera trajectories for later evaluation.
+
+Evaluated on TUM RGB-D `fr1/xyz` (monocular): **84.3%** frame-pair
+tracking success and **2.02°** mean rotation error on accepted pairs
+(see [Results](#tum-rgb-d-evaluation)).
 
 ### Motion Estimation
 
@@ -52,6 +55,8 @@ later evaluation.
 - Dynamic objects can produce incorrect camera-motion estimates.
 - The current system does not yet perform global optimization or
   loop closure.
+- Low-parallax frame pairs are often rejected at the cheirality check
+  after RANSAC; an adaptive inlier threshold is a planned improvement.
 
 These limitations are intentionally preserved as part of the
 current experimental baseline and will be addressed in later
@@ -65,6 +70,31 @@ the ANNY parametric human body model.
 ---
 
 ## Results
+
+### TUM RGB-D Evaluation
+
+Relative pose estimation evaluated against motion-capture ground truth
+on the TUM RGB-D `fr1/xyz` sequence (monocular RGB only, no depth or IMU).
+
+| Metric | Value |
+|---|---|
+| Frame pairs evaluated | 159 |
+| Tracking success (accepted pairs) | 84.3% (134 / 159) |
+| Mean rotation error, accepted pairs | 2.02° |
+
+Pipeline per frame pair: ORB → BFMatcher (KNN) → Essential Matrix + RANSAC
+→ pose recovery with cheirality check → triangulation → PnP localization.
+
+<img src="docs/images/tum_orb_matches.png" width="700">
+
+ORB features matched across a TUM `fr1/xyz` frame pair (top 50 matches by
+descriptor distance).
+
+<img src="docs/images/tum_pair_diagnostics.png" width="700">
+
+Median parallax and rotation error across all sampled frame pairs. Red
+markers show pairs rejected at the cheirality-check gate after
+Essential-Matrix RANSAC; most rejections occur at low parallax.
 
 ### Spatial Mapping Demo
 

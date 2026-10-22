@@ -5,6 +5,24 @@
 
 namespace vision
 {
+    const std::vector<cv::KeyPoint>&
+    KNNMatcherProcessor::getMatchedPreviousKeypoints() const
+    {
+        return matchedPreviousKeypoints;
+    }
+
+    const std::vector<cv::KeyPoint>&
+    KNNMatcherProcessor::getMatchedCurrentKeypoints() const
+    {
+        return matchedCurrentKeypoints;
+    }
+
+    const std::vector<cv::DMatch>&
+    KNNMatcherProcessor::getGoodMatches() const
+    {
+        return lastGoodMatches;
+    }
+
     cv::Mat KNNMatcherProcessor::process(const cv::Mat& frame)
     {
         std::vector<cv::KeyPoint> currentKeypoints;
@@ -13,6 +31,10 @@ namespace vision
         cv::Mat output;
         std::vector<cv::DMatch> goodMatches;        
         std::vector<std::vector<cv::DMatch>> knnMatches;
+
+        matchedPreviousKeypoints.clear();
+        matchedCurrentKeypoints.clear();
+        lastGoodMatches.clear();
 
         cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
@@ -58,6 +80,11 @@ namespace vision
                     goodMatches.push_back(best);
                 }
             }
+
+            matchedPreviousKeypoints = previousKeypoints;
+            matchedCurrentKeypoints = currentKeypoints;
+            lastGoodMatches = goodMatches;
+
             // Visualize
             cv::drawMatches(previousFrame, previousKeypoints, frame, currentKeypoints, goodMatches, output, cv::Scalar::all(-1));  
         } else {
